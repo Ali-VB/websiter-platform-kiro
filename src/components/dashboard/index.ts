@@ -1,0 +1,12 @@
+export { ClientDashboard } from './ClientDashboard';
+export { DashboardSidebar } from './DashboardSidebar';
+export { DashboardHeader } from './DashboardHeader';
+export { DashboardSettings } from './DashboardSettings';
+export { ProjectOverview } from './ProjectOverview';
+export { ProjectsList } from './ProjectsList';
+export { ProjectDetails } from './ProjectDetails';
+export { ProjectStatusBadge } from './ProjectStatusBadge';
+export { PaymentHistory } from './PaymentHistory';
+export { PaymentModal } from './PaymentModal';
+export { SupportTickets } from './SupportTickets';
+export { CreateTicketModal } from './CreateTicketModal';

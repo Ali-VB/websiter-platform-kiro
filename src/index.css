@@ -1,0 +1,339 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 14 165 233;
+    --color-secondary: 113 113 122;
+    --color-accent: 217 70 239;
+    --color-success: 34 197 94;
+    --color-warning: 245 158 11;
+    --color-error: 239 68 68;
+  }
+
+  * {
+    @apply scroll-smooth;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-gradient-subtle text-neutral-900 font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold text-neutral-900 tracking-tight;
+  }
+
+  p, span, div {
+    @apply font-sans;
+  }
+
+  /* Touch-friendly interactions */
+  button, a, [role="button"] {
+    @apply touch-manipulation;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-500;
+  }
+
+  /* Smooth transitions for navigation */
+  .nav-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-sans font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform-gpu;
+  }
+
+  .btn-primary {
+    @apply btn bg-gradient-dark text-neutral-0 hover:bg-neutral-800 hover:scale-[1.02] focus:ring-neutral-900 shadow-elegant hover:shadow-floating active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply btn bg-gradient-subtle text-neutral-900 hover:bg-neutral-150 hover:scale-[1.02] focus:ring-neutral-500 shadow-soft hover:shadow-elegant active:scale-[0.98];
+  }
+
+  .btn-outline {
+    @apply btn border border-neutral-300 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-400 hover:scale-[1.02] focus:ring-neutral-500 shadow-minimal hover:shadow-soft active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply btn text-neutral-700 hover:bg-neutral-100 hover:scale-[1.02] focus:ring-neutral-500 active:scale-[0.98];
+  }
+
+  .input {
+    @apply block w-full rounded-xl border border-neutral-300 px-4 py-3 text-sm font-sans placeholder-neutral-400 transition-all duration-300 focus:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 bg-neutral-0 hover:border-neutral-400;
+  }
+
+  .card {
+    @apply rounded-xl bg-gradient-card p-6 shadow-elegant border border-neutral-200 hover:shadow-floating transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply card hover:scale-[1.02] hover:-translate-y-1;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-neutral-800 to-neutral-600 bg-clip-text text-transparent;
+  }
+
+  .glass {
+    @apply bg-neutral-0/90 backdrop-blur-md border border-neutral-200/50 hover:bg-neutral-0/95 transition-all duration-300;
+  }
+
+  /* Status Badges */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-sans font-medium transition-all duration-200;
+  }
+  
+  .badge-success {
+    @apply bg-success-100 text-success-700 hover:bg-success-200;
+  }
+  
+  .badge-warning {
+    @apply bg-warning-100 text-warning-700 hover:bg-warning-200;
+  }
+  
+  .badge-error {
+    @apply bg-error-100 text-error-700 hover:bg-error-200;
+  }
+  
+  .badge-neutral {
+    @apply bg-neutral-100 text-neutral-700 hover:bg-neutral-200;
+  }
+
+  /* Interactive Elements */
+  .interactive {
+    @apply transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer;
+  }
+
+  /* Shimmer Effect */
+  .shimmer {
+    @apply relative overflow-hidden;
+  }
+
+  .shimmer::before {
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-neutral-0/20 to-transparent;
+    content: '';
+    animation: shimmer 2s infinite;
+  }
+
+  /* Floating Animation */
+  .floating {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Pulse Glow */
+  .pulse-glow {
+    @apply shadow-glow;
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+
+  .animation-delay-800 {
+    animation-delay: 800ms;
+  }
+
+  .animation-delay-1000 {
+    animation-delay: 1000ms;
+  }
+
+  .bg-stripes {
+    background-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.2) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.2) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 1rem 1rem;
+  }
+
+  .animate-stripes {
+    animation: stripes 1s linear infinite;
+  }
+
+  @keyframes stripes {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 1rem 0;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-2px);
+    }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+/* Enha
+nced Dashboard Mobile Styles */
+@layer components {
+  .dashboard-mobile-optimized {
+    @apply touch-manipulation;
+  }
+
+  /* Mobile-friendly progress tracker */
+  .progress-tracker-mobile {
+    @apply flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4;
+  }
+
+  .progress-step-mobile {
+    @apply flex items-center space-x-3 sm:flex-col sm:space-x-0 sm:space-y-2;
+  }
+
+  /* Mobile approval banner */
+  .approval-banner-mobile {
+    @apply p-4 sm:p-6;
+  }
+
+  .approval-banner-content {
+    @apply flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4;
+  }
+
+  /* Mobile next steps */
+  .next-steps-mobile {
+    @apply space-y-3 sm:space-y-4;
+  }
+
+  .next-step-item-mobile {
+    @apply flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4;
+  }
+
+  /* Mobile status indicators */
+  .status-indicator-mobile {
+    @apply text-xs sm:text-sm;
+  }
+
+  /* Mobile project overview */
+  .project-overview-mobile {
+    @apply space-y-4 sm:space-y-6;
+  }
+
+  .project-stats-mobile {
+    @apply grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 sm:gap-4;
+  }
+
+  /* Mobile dashboard layout */
+  .dashboard-content-mobile {
+    @apply px-4 py-6 sm:px-6 sm:py-8;
+  }
+
+  /* Mobile-friendly buttons */
+  .mobile-button {
+    @apply min-h-[44px] px-4 py-2 text-sm font-medium;
+  }
+
+  /* Mobile modal adjustments */
+  .mobile-modal {
+    @apply mx-4 my-8 max-h-[calc(100vh-4rem)] sm:mx-auto sm:my-16;
+  }
+
+  /* Mobile timeline */
+  .timeline-mobile {
+    @apply space-y-4 sm:space-y-6;
+  }
+
+  .timeline-item-mobile {
+    @apply flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4;
+  }
+}
+
+/* Animation enhancements for mobile */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-mobile-friendly {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .hover-lift-mobile {
+    @apply hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:shadow-md;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .status-indicator {
+    @apply border-2 border-current;
+  }
+
+  .progress-tracker {
+    @apply contrast-more:border-2 contrast-more:border-current;
+  }
+}
+
+/* Dark mode support for dashboard components */
+@media (prefers-color-scheme: dark) {
+  .dashboard-dark {
+    @apply bg-gray-900 text-gray-100;
+  }
+
+  .card-dark {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .status-indicator-dark {
+    @apply bg-opacity-20 border-opacity-30;
+  }
+}
