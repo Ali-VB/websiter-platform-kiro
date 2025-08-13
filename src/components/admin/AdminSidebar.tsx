@@ -187,26 +187,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 </nav>
             </div>
 
-            {/* Stats Section */}
-            {!isCollapsed && (
-                <div className="px-4 py-3 border-t border-gray-200">
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-3">
-                        <div className="text-sm font-medium text-gray-900 mb-2">
-                            Quick Stats
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="text-center">
-                                <div className="font-bold text-blue-600">{projects.filter(p => p.status === 'new').length}</div>
-                                <div className="text-gray-600">New</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="font-bold text-green-600">{projects.filter(p => p.status === 'completed').length}</div>
-                                <div className="text-gray-600">Completed</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+
 
             {/* User Section */}
             <div className="p-4 border-t border-gray-200">

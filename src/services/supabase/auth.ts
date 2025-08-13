@@ -147,28 +147,6 @@ export class AuthService {
     }
   }
 
-  // Sign in with Google (CLIENT ONLY)
-  static async signInWithGoogle() {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) throw error;
-      
-      // Note: We'll check for admin role in the auth state change listener
-      // since OAuth redirects don't allow us to check immediately
-      
-      return data;
-    } catch (error) {
-      console.error('Google sign in error:', error);
-      throw error;
-    }
-  }
-
   // Sign out
   static async signOut() {
     try {

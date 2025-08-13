@@ -9,7 +9,7 @@ interface AuthContextType {
     signUp: (data: { email: string; password: string; name: string }) => Promise<void>;
     signIn: (data: { email: string; password: string }) => Promise<void>;
     adminSignIn: (data: { email: string; password: string }) => Promise<void>;
-    signInWithGoogle: () => Promise<void>;
+
     signOut: () => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
     updatePassword: (password: string) => Promise<void>;
@@ -151,17 +151,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const signInWithGoogle = async () => {
-        setLoading(true);
-        try {
-            await AuthService.signInWithGoogle();
-            // User will be set via the auth state change listener
-        } catch (error) {
-            setLoading(false);
-            throw error;
-        }
-    };
-
     const signOut = async () => {
         setLoading(true);
         try {
@@ -195,7 +184,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signUp,
         signIn,
         adminSignIn,
-        signInWithGoogle,
         signOut,
         resetPassword,
         updatePassword,

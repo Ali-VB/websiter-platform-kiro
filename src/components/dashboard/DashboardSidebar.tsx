@@ -137,31 +137,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 </nav>
             </div>
 
-            {/* Stats Section */}
-            {!isCollapsed && (
-                <div className="px-4 py-4 border-t border-neutral-200">
-                    <motion.div
-                        className="bg-gradient-accent rounded-xl p-4 shadow-soft hover:shadow-elegant transition-all duration-300"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5, duration: 0.3 }}
-                    >
-                        <div className="text-sm font-display font-semibold text-neutral-800 mb-3">
-                            Quick Stats
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div className="text-center bg-neutral-0/50 rounded-lg p-2 hover:bg-neutral-0/70 transition-colors">
-                                <div className="font-bold text-xl text-success-600 mb-1">{projects.length}</div>
-                                <div className="text-neutral-600 font-sans">Total Projects</div>
-                            </div>
-                            <div className="text-center bg-neutral-0/50 rounded-lg p-2 hover:bg-neutral-0/70 transition-colors">
-                                <div className="font-bold text-xl text-accent-600 mb-1">{projects.filter(p => p.status === 'in_progress').length}</div>
-                                <div className="text-neutral-600 font-sans">Active</div>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
+
 
             {/* User Section */}
             <div className="p-4 border-t border-neutral-200 bg-gradient-subtle">

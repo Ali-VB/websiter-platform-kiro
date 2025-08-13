@@ -210,35 +210,6 @@ export const SupportTickets: React.FC = () => {
                 </div>
             </motion.div>
 
-            {/* Quick Stats */}
-            <motion.div variants={fadeInUp}>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Card className="p-4 text-center">
-                        <div className="text-2xl font-bold text-error-600">
-                            {tickets.filter(t => t.status === 'open').length}
-                        </div>
-                        <div className="text-sm text-secondary-600">Open</div>
-                    </Card>
-                    <Card className="p-4 text-center">
-                        <div className="text-2xl font-bold text-warning-600">
-                            {tickets.filter(t => t.status === 'in_progress').length}
-                        </div>
-                        <div className="text-sm text-secondary-600">In Progress</div>
-                    </Card>
-                    <Card className="p-4 text-center">
-                        <div className="text-2xl font-bold text-success-600">
-                            {tickets.filter(t => t.status === 'resolved').length}
-                        </div>
-                        <div className="text-sm text-secondary-600">Resolved</div>
-                    </Card>
-                    <Card className="p-4 text-center">
-                        <div className="text-2xl font-bold text-secondary-600">
-                            {tickets.length}
-                        </div>
-                        <div className="text-sm text-secondary-600">Total</div>
-                    </Card>
-                </div>
-            </motion.div>
 
             {/* Filter Tabs */}
             <motion.div variants={fadeInUp}>

@@ -5,7 +5,6 @@ import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 export const AdminDebugPanel: React.FC = () => {
-    const { user } = useAuth();
     const [debugInfo, setDebugInfo] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
