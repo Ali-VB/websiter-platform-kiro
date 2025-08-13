@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Card, Button } from '../common';
 import { supabase } from '../../lib/supabase';
 import { createClient } from '@supabase/supabase-js';
+import { UserSyncService } from '../../services/supabase/userSync';
+import { AdminDebugPanel } from './AdminDebugPanel';
+
 import toast from 'react-hot-toast';
 import {
     UserIcon,
@@ -51,25 +54,38 @@ export const StandaloneDatabaseOverview: React.FC = React.memo(() => {
                 console.log('✅ Using Service Role key');
             }
 
-            // Load all data
-            const [usersResult, projectsResult, paymentsResult] = await Promise.all([
-                supabase.from('users').select('*'),
+            // Load all data using standardized approach
+            const [projectsResult, paymentsResult] = await Promise.all([
                 supabase.from('projects').select('*'),
                 supabase.from('payments').select('*')
             ]);
 
-            // Try to get auth users
-            let authUsersResult;
+            // Get users using standardized UserSyncService with fallback
+            let customUsers = [];
+            let authUsers = [];
+
             try {
-                authUsersResult = await adminClient.auth.admin.listUsers();
-                console.log('✅ Auth users loaded:', authUsersResult.data?.users?.length || 0);
-            } catch (authError) {
-                console.warn('⚠️ Auth users failed:', authError);
-                authUsersResult = { data: { users: [] }, error: authError };
+                const userResult = await UserSyncService.getAdminUserList();
+                customUsers = userResult.customUsers;
+                authUsers = userResult.authUsers;
+                console.log('✅ Users loaded via UserSyncService:', customUsers.length, 'custom,', authUsers.length, 'auth');
+            } catch (userError: any) {
+                console.warn('⚠️ UserSyncService failed, trying direct access:', userError.message);
+
+                // Fallback: Try direct access to users table
+                try {
+                    const directResult = await supabase.from('users').select('*');
+                    if (directResult.error) throw directResult.error;
+                    customUsers = directResult.data || [];
+                    console.log('✅ Users loaded via direct access:', customUsers.length, 'users');
+                } catch (directError: any) {
+                    console.error('❌ Direct users access also failed:', directError.message);
+                    // Continue with empty users array
+                    customUsers = [];
+                    authUsers = [];
+                }
             }
 
-            const customUsers = usersResult.data || [];
-            const authUsers = authUsersResult.data?.users || [];
             const projects = projectsResult.data || [];
             const payments = paymentsResult.data || [];
 
@@ -118,8 +134,22 @@ export const StandaloneDatabaseOverview: React.FC = React.memo(() => {
 
         } catch (error: any) {
             console.error('❌ Load error:', error);
-            setError(error.message);
-            toast.error('Failed to load data');
+
+            let errorMessage = error.message;
+
+            // Provide specific guidance for common errors
+            if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
+                errorMessage = 'Access denied. This might be due to Row Level Security policies. Please check that:\n' +
+                    '1. Your user has admin role in the users table\n' +
+                    '2. RLS policies allow admin access\n' +
+                    '3. Service role key is configured correctly';
+                console.error('🔒 RLS Policy Issue - Check admin permissions and database policies');
+            } else if (error.message?.includes('JWT')) {
+                errorMessage = 'Authentication issue. Please sign out and sign back in.';
+            }
+
+            setError(errorMessage);
+            toast.error('Failed to load database data');
             setDataLoaded(false);
             // Clear localStorage on error
             localStorage.removeItem('kiro-database-stats');
@@ -192,12 +222,17 @@ export const StandaloneDatabaseOverview: React.FC = React.memo(() => {
                         <div className="text-center">
                             <div className="text-4xl mb-2">❌</div>
                             <h3 className="text-lg font-semibold text-red-600 mb-2">Error</h3>
-                            <p className="text-red-700 mb-4">{error}</p>
+                            <p className="text-red-700 mb-4 whitespace-pre-line">{error}</p>
                             <Button onClick={loadData} className="bg-red-600 hover:bg-red-700">
                                 Retry
                             </Button>
                         </div>
                     </Card>
+                )}
+
+                {/* Debug Panel - Show when there are errors */}
+                {error && (
+                    <AdminDebugPanel />
                 )}
 
                 {/* Data Display */}

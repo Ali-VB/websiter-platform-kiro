@@ -1,13 +1,9 @@
 import { supabase } from '../../lib/supabase';
 import type { User } from '@supabase/supabase-js';
+import { UserSyncService, type CustomUser } from './userSync';
 
-export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  role: 'client' | 'admin';
-  onboardingCompleted: boolean;
-}
+// Use CustomUser from UserSyncService for consistency
+export type AuthUser = CustomUser;
 
 export interface SignUpData {
   email: string;
@@ -44,7 +40,7 @@ export class AuthService {
 
       // Create user profile in our users table (only if user is confirmed)
       if (data.user && data.user.email_confirmed_at) {
-        await this.createUserProfile(data.user, name);
+        await UserSyncService.createCustomUser(data.user, { name, role: 'client' });
       }
 
       return { user: data.user, session: data.session };
@@ -56,25 +52,14 @@ export class AuthService {
 
   // Helper method to create user profile
   static async createUserProfile(user: any, name: string) {
-    const { error: profileError } = await supabase
-      .from('users')
-      .insert({
-        id: user.id,
-        email: user.email!,
-        name,
-        role: 'client',
-        onboarding_completed: false,
-      });
-
-    if (profileError) {
-      console.error('Profile creation error:', profileError);
-      
+    try {
+      await UserSyncService.createCustomUser(user, { name, role: 'client' });
+    } catch (error: any) {
       // Check if it's a duplicate key error (user already exists)
-      if (profileError.code === '23505') {
+      if (error.code === '23505') {
         console.log('User profile already exists, continuing...');
         return;
       }
-      
       throw new Error('Failed to create user profile. Please try again.');
     }
   }
@@ -223,7 +208,7 @@ export class AuthService {
     }
   }
 
-  // Get current user profile
+  // Get current user profile - standardized approach
   static async getCurrentUserProfile(): Promise<AuthUser | null> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -241,86 +226,39 @@ export class AuthService {
         return null;
       }
 
-      const { data: profile, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      // Try to get user from custom table first
+      let profile = await UserSyncService.getUserById(user.id);
 
-      if (error) {
-        console.log('Profile fetch error:', error);
+      if (!profile) {
+        // Profile doesn't exist, create it
+        console.log('Profile not found, creating...');
         
-        // If profile doesn't exist, try to create it
-        if (error.code === 'PGRST116') {
-          console.log('Profile not found, creating...');
-          try {
-            const userName = user.user_metadata?.name || 
-                           user.user_metadata?.full_name || 
-                           user.email?.split('@')[0] || 
-                           'User';
-            
-            await this.createUserProfile(user, userName);
-            
-            // Try to fetch again
-            const { data: newProfile, error: newError } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', user.id)
-              .single();
-            
-            if (newError) {
-              console.error('Failed to fetch newly created profile:', newError);
-              return null;
-            }
-            
-            console.log('Successfully created and fetched profile:', newProfile);
-            
-            return {
-              id: newProfile.id,
-              email: newProfile.email,
-              name: newProfile.name,
-              role: newProfile.role,
-              onboardingCompleted: newProfile.onboarding_completed,
-            };
-          } catch (createError) {
-            console.error('Failed to create missing profile:', createError);
-            return null;
-          }
-        }
-        return null;
+        const userName = user.user_metadata?.name || 
+                         user.user_metadata?.full_name || 
+                         user.email?.split('@')[0] || 
+                         'User';
+        
+        profile = await UserSyncService.createCustomUser(user, { name: userName, role: 'client' });
+        console.log('Successfully created profile:', profile);
+      } else {
+        console.log('Profile found:', profile);
       }
 
-      console.log('Profile found:', profile);
-
-      return {
-        id: profile.id,
-        email: profile.email,
-        name: profile.name,
-        role: profile.role,
-        onboardingCompleted: profile.onboarding_completed,
-      };
+      return profile;
     } catch (error) {
       console.error('Get user profile error:', error);
       return null;
     }
   }
 
-  // Update user profile
+  // Update user profile - standardized approach
   static async updateUserProfile(updates: Partial<AuthUser>) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) throw new Error('No authenticated user');
 
-      const { error } = await supabase
-        .from('users')
-        .update({
-          name: updates.name,
-          onboarding_completed: updates.onboardingCompleted,
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
+      await UserSyncService.updateUser(user.id, updates);
     } catch (error) {
       console.error('Update user profile error:', error);
       throw error;

@@ -92,6 +92,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             description: 'Cleanup & optimize storage',
             badge: null,
         },
+
         {
             id: 'settings' as const,
             label: 'Settings',

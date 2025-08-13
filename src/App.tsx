@@ -6,6 +6,7 @@ import { ClientDashboard } from './components/dashboard';
 import { AdminDashboard } from './components/admin';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AuthProvider, useAuth } from './hooks/useAuth';
+import { useUserSync } from './hooks/useUserSync';
 import { ProjectService } from './services/supabase/projects';
 import type { OnboardingData } from './components/onboarding';
 
@@ -45,6 +46,9 @@ function AppContent() {
   const [currentView, setCurrentView] = useState<'landing' | 'onboarding' | 'dashboard' | 'admin' | 'admin-login'>('landing');
   // useWebsiteRequests removed - using simple approach
   const { user } = useAuth();
+
+  // Enable automatic user synchronization
+  useUserSync();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submissionRef = useRef<string | null>(null); // Track last submission to prevent duplicates
 

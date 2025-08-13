@@ -18,6 +18,8 @@ import { ProjectManagementList } from './ProjectManagement';
 import { ClientList } from './ClientManagement';
 import { ProjectAssets } from './ProjectAssets';
 import { StorageManagement } from './StorageManagement';
+import { UserSyncService } from '../../services/supabase/userSync';
+
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
@@ -63,6 +65,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Auto-sync users on admin dashboard load
+    useEffect(() => {
+        const performAutoSync = async () => {
+            try {
+                console.log('🔄 Starting automatic user sync...');
+                const result = await UserSyncService.syncAuthUsersToCustomTable();
+
+                if (result.synced > 0) {
+                    console.log(`✅ Auto-sync completed: ${result.synced} users synced`);
+                }
+
+                if (result.errors.length > 0) {
+                    console.warn('⚠️ Auto-sync had errors:', result.errors);
+                }
+            } catch (error) {
+                console.error('❌ Auto-sync failed:', error);
+            }
+        };
+
+        // Run sync immediately when admin dashboard loads
+        performAutoSync();
+
+        // Set up periodic sync every 5 minutes
+        const syncInterval = setInterval(performAutoSync, 5 * 60 * 1000);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(syncInterval);
     }, []);
 
     const refreshProjects = () => {
