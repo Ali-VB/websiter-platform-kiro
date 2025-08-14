@@ -18,11 +18,13 @@ import { ProjectManagementList } from './ProjectManagement';
 import { ClientList } from './ClientManagement';
 import { ProjectAssets } from './ProjectAssets';
 import { StorageManagement } from './StorageManagement';
+
 import { UserSyncService } from '../../services/supabase/userSync';
 
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
+
 import {
     FunnelIcon,
     ChartBarIcon
@@ -285,8 +287,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                             </p>
                         </div>
 
-                        {activeView === 'kanban' && (
-                            <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3">
+                            {activeView === 'kanban' && (
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -296,8 +298,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                                     <FunnelIcon className="w-4 h-4" />
                                     <span>Filters</span>
                                 </Button>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
 

@@ -168,6 +168,27 @@ export class ProjectService {
         throw new Error(`Invalid client ID format: ${clientId}`);
       }
 
+      // Check if client already has an active project (limitation: one project at a time)
+      console.log('🔍 Checking for existing active projects...');
+      const { data: existingProjects, error: checkError } = await supabase
+        .from('projects')
+        .select('id, title, status')
+        .eq('client_id', clientId)
+        .not('status', 'eq', 'completed');
+
+      if (checkError) {
+        console.error('❌ Error checking existing projects:', checkError);
+        throw new Error('Failed to check existing projects');
+      }
+
+      if (existingProjects && existingProjects.length > 0) {
+        const activeProject = existingProjects[0];
+        console.log('⚠️ Client already has an active project:', activeProject);
+        throw new Error(`You already have an active project: "${activeProject.title}". Please complete your current project before starting a new one. This helps us provide better service and manage your project effectively.`);
+      }
+
+      console.log('✅ No active projects found, proceeding with creation...');
+
       // Extract data from onboarding flow structure
       const contactInfo = onboardingData.contactInfo || {};
       const websitePurpose = onboardingData.websitePurpose || {};

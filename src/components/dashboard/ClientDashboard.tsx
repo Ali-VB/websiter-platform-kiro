@@ -15,7 +15,11 @@ import { fadeInUp } from '../../utils/motion';
 
 type DashboardView = 'overview' | 'projects' | 'payments' | 'support' | 'settings';
 
-export const ClientDashboard: React.FC = () => {
+interface ClientDashboardProps {
+    onStartProject?: () => void;
+}
+
+export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onStartProject }) => {
     const { user } = useAuth();
     const { projects, loading: projectsLoading } = useProjects();
 
@@ -73,11 +77,13 @@ export const ClientDashboard: React.FC = () => {
     const renderContent = () => {
         switch (activeView) {
             case 'overview':
-                // Get the most recent project
+                // Get active projects (not completed)
+                const activeProjects = projects.filter(p => p.status !== 'completed');
                 const allItems = projects.sort((a, b) =>
                     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
                 );
                 const currentProject = allItems[0];
+                const hasActiveProject = activeProjects.length > 0;
 
                 return (
                     <div className="space-y-8">
@@ -189,22 +195,35 @@ export const ClientDashboard: React.FC = () => {
                                     </button>
                                 </div>
                             </>
-                        ) : (
+                        ) : !hasActiveProject ? (
                             <div className="text-center py-12">
-                                <h2 className="text-2xl font-bold mb-4">No Projects Yet</h2>
-                                <p className="text-gray-600 mb-6">Start your first website project with us!</p>
+                                <h2 className="text-2xl font-bold mb-4">No Active Projects</h2>
+                                <p className="text-gray-600 mb-6">Start your website project with us!</p>
                                 <button
-                                    onClick={() => window.location.href = '/'}
+                                    onClick={() => onStartProject?.()}
                                     className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                                 >
                                     Start New Project
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="text-center py-12">
+                                <h2 className="text-2xl font-bold mb-4">Project Limit Reached</h2>
+                                <p className="text-gray-600 mb-6">
+                                    You can only have one active project at a time. Please complete your current project before starting a new one.
+                                </p>
+                                <button
+                                    onClick={() => setActiveView('projects')}
+                                    className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700"
+                                >
+                                    View Current Project
                                 </button>
                             </div>
                         )}
                     </div>
                 );
             case 'projects':
-                return <ProjectOverview projects={projects} onNavigateToSupport={() => setActiveView('support')} />;
+                return <ProjectOverview projects={projects} onNavigateToSupport={() => setActiveView('support')} onStartProject={onStartProject} />;
             case 'payments':
                 return <PaymentHistory projects={projects} />;
             case 'support':
@@ -269,8 +288,11 @@ export const ClientDashboard: React.FC = () => {
                                 {activeView === 'settings' && 'Account preferences'}
                             </p>
                         </div>
-                        <div className="text-sm text-neutral-500 font-sans">
-                            {user.name}
+                        <div className="flex items-center space-x-4">
+
+                            <div className="text-sm text-neutral-500 font-sans">
+                                {user.name}
+                            </div>
                         </div>
                     </div>
                 </div>

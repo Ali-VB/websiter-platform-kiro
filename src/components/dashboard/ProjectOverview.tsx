@@ -27,11 +27,13 @@ interface ProjectOverviewProps {
 interface ProjectOverviewProps {
     projects: ProjectRow[];
     onNavigateToSupport?: () => void;
+    onStartProject?: () => void;
 }
 
 export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
     projects,
     onNavigateToSupport,
+    onStartProject,
 }) => {
     const { user } = useAuth();
     const [activeProjectId, setActiveProjectId] = useState<string | null>(
@@ -272,6 +274,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         );
     };
 
+    // Check for active projects (not completed)
+    const activeProjects = projects.filter(p => p.status !== 'completed');
+    const hasActiveProject = activeProjects.length > 0;
+
     if (projects.length === 0) {
         return (
             <motion.div variants={fadeInUp}>
@@ -283,7 +289,27 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                     <p className="text-secondary-600 mb-6">
                         You haven't created any projects yet. Let's get started!
                     </p>
-                    <Button size="lg" onClick={() => window.location.href = '/'}>
+                    <Button size="lg" onClick={() => onStartProject?.()}>
+                        Start New Project
+                    </Button>
+                </Card>
+            </motion.div>
+        );
+    }
+
+    // If user has completed projects but no active ones, allow starting a new project
+    if (!hasActiveProject) {
+        return (
+            <motion.div variants={fadeInUp}>
+                <Card className="p-12 text-center">
+                    <div className="text-6xl mb-4">✅</div>
+                    <h2 className="text-2xl font-bold text-secondary-900 mb-2">
+                        Ready for Your Next Project?
+                    </h2>
+                    <p className="text-secondary-600 mb-6">
+                        Your previous projects are completed. Start a new website project with us!
+                    </p>
+                    <Button size="lg" onClick={() => onStartProject?.()}>
                         Start New Project
                     </Button>
                 </Card>

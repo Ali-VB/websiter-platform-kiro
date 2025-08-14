@@ -300,6 +300,7 @@ export interface Database {
           updated_at?: string
         }
       }
+
     }
     Views: {
       [_ in never]: never

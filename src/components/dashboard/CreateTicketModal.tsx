@@ -20,8 +20,6 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
         description: '',
     });
     const [loading, setLoading] = useState(false);
-    const [attachments, setAttachments] = useState<File[]>([]);
-    const [dragActive, setDragActive] = useState(false);
 
     const categories = [
         'Technical Issue',
@@ -53,7 +51,6 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
                 category: formData.category as any,
                 priority: formData.priority as any,
                 description: formData.description,
-                attachments: attachments.length > 0 ? attachments : undefined,
             }, user.id);
 
             toast.success('Support ticket created successfully! We\'ll get back to you soon.');
@@ -72,76 +69,6 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
             ...prev,
             [e.target.name]: e.target.value,
         }));
-    };
-
-    // File upload handlers
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(e.target.files || []);
-        handleFiles(files);
-    };
-
-    const handleFiles = (files: File[]) => {
-        const validFiles: File[] = [];
-        const maxSize = 10 * 1024 * 1024; // 10MB
-        const allowedTypes = [
-            'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'text/plain'
-        ];
-
-        files.forEach(file => {
-            if (file.size > maxSize) {
-                toast.error(`File "${file.name}" is too large. Maximum size is 10MB.`);
-                return;
-            }
-
-            if (!allowedTypes.includes(file.type)) {
-                toast.error(`File "${file.name}" is not a supported format.`);
-                return;
-            }
-
-            validFiles.push(file);
-        });
-
-        if (attachments.length + validFiles.length > 5) {
-            toast.error('Maximum 5 files allowed per ticket.');
-            return;
-        }
-
-        setAttachments(prev => [...prev, ...validFiles]);
-    };
-
-    const removeFile = (index: number) => {
-        setAttachments(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const handleDrag = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.type === 'dragenter' || e.type === 'dragover') {
-            setDragActive(true);
-        } else if (e.type === 'dragleave') {
-            setDragActive(false);
-        }
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-
-        const files = Array.from(e.dataTransfer.files);
-        handleFiles(files);
-    };
-
-    const formatFileSize = (bytes: number) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
     return (
@@ -250,81 +177,6 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
                     <div className="text-xs text-secondary-500 mt-1">
                         Include as much detail as possible to help us resolve your issue quickly.
                     </div>
-                </div>
-
-                {/* File Upload */}
-                <div>
-                    <label className="block text-sm font-medium text-secondary-700 mb-2">
-                        Attachments (Optional)
-                    </label>
-                    <div
-                        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${dragActive
-                            ? 'border-primary-400 bg-primary-50'
-                            : 'border-secondary-300 hover:border-secondary-400'
-                            }`}
-                        onDragEnter={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDragOver={handleDrag}
-                        onDrop={handleDrop}
-                        onClick={() => document.getElementById('file-upload')?.click()}
-                    >
-                        <div className="text-3xl mb-2">📎</div>
-                        <div className="text-sm text-secondary-600 mb-2">
-                            Drag and drop files here, or click to browse
-                        </div>
-                        <div className="text-xs text-secondary-500">
-                            Supported: Images, PDFs, Documents (Max 10MB each, 5 files max)
-                        </div>
-                        <input
-                            id="file-upload"
-                            type="file"
-                            multiple
-                            accept="image/*,.pdf,.doc,.docx,.txt"
-                            disabled={loading}
-                            onChange={handleFileSelect}
-                            className="hidden"
-                        />
-                    </div>
-
-                    {/* File List */}
-                    {attachments.length > 0 && (
-                        <div className="mt-4 space-y-2">
-                            <div className="text-sm font-medium text-secondary-700">
-                                Attached Files ({attachments.length}/5)
-                            </div>
-                            {attachments.map((file, index) => (
-                                <div
-                                    key={index}
-                                    className="flex items-center justify-between p-3 bg-secondary-50 rounded-lg border"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="text-lg">
-                                            {file.type.startsWith('image/') ? '🖼️' :
-                                                file.type === 'application/pdf' ? '📄' : '📝'}
-                                        </div>
-                                        <div>
-                                            <div className="text-sm font-medium text-secondary-900">
-                                                {file.name}
-                                            </div>
-                                            <div className="text-xs text-secondary-500">
-                                                {formatFileSize(file.size)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removeFile(index)}
-                                        disabled={loading}
-                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                    >
-                                        ✕
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
 
                 {/* Response Time Notice */}

@@ -127,7 +127,7 @@ function AppContent() {
     setCurrentView('landing');
   };
 
-  // Check URL for dashboard routes
+  // Check URL for dashboard routes and handle sign-in redirect
   React.useEffect(() => {
     const path = window.location.pathname;
     if (path === '/system-management-portal') {
@@ -139,8 +139,11 @@ function AppContent() {
       }
     } else if (path === '/dashboard' && user) {
       setCurrentView('dashboard');
+    } else if (user && user.role !== 'admin' && currentView === 'landing') {
+      // When user signs in from landing page, redirect to dashboard
+      setCurrentView('dashboard');
     }
-  }, [user]);
+  }, [user, currentView]);
 
   const handleAdminLoginSuccess = () => {
     setCurrentView('admin');
@@ -155,7 +158,7 @@ function AppContent() {
   }
 
   if (currentView === 'dashboard') {
-    return <ClientDashboard />;
+    return <ClientDashboard onStartProject={handleStartProject} />;
   }
 
   if (currentView === 'onboarding') {

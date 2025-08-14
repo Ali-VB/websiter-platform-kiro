@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './Button';
 import { useAuth } from '../../hooks/useAuth';
 import { AuthModal } from '../auth';
+
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface NavbarProps {
@@ -148,65 +149,69 @@ export const Navbar: React.FC<NavbarProps> = ({ className = '' }) => {
                     </div>
 
                     {/* Desktop CTA Buttons */}
-                    <div className="hidden md:flex items-center">
+                    <div className="hidden md:flex items-center space-x-4">
                         {user ? (
-                            <div className="relative" ref={dropdownRef}>
-                                <motion.button
-                                    onClick={() => setShowUserDropdown(!showUserDropdown)}
-                                    className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                >
-                                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                                        <span className="text-white font-medium text-sm">
-                                            {user.name?.charAt(0) || 'U'}
-                                        </span>
-                                    </div>
-                                    <span className="text-gray-600 font-cabin font-normal text-sm">
-                                        {user.name}
-                                    </span>
-                                    <ChevronDownIcon
-                                        className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showUserDropdown ? 'rotate-180' : ''
-                                            }`}
-                                    />
-                                </motion.button>
+                            <>
 
-                                {/* User Dropdown */}
-                                <AnimatePresence>
-                                    {showUserDropdown && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            transition={{ duration: 0.15 }}
-                                            className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-[55]"
-                                        >
-                                            <div className="px-4 py-2 border-b border-gray-100">
-                                                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                                <p className="text-xs text-gray-500">{user.email}</p>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    setShowUserDropdown(false);
-                                                    window.location.href = '/dashboard';
-                                                }}
-                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+
+                                <div className="relative" ref={dropdownRef}>
+                                    <motion.button
+                                        onClick={() => setShowUserDropdown(!showUserDropdown)}
+                                        className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                                            <span className="text-white font-medium text-sm">
+                                                {user.name?.charAt(0) || 'U'}
+                                            </span>
+                                        </div>
+                                        <span className="text-gray-600 font-cabin font-normal text-sm">
+                                            {user.name}
+                                        </span>
+                                        <ChevronDownIcon
+                                            className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showUserDropdown ? 'rotate-180' : ''
+                                                }`}
+                                        />
+                                    </motion.button>
+
+                                    {/* User Dropdown */}
+                                    <AnimatePresence>
+                                        {showUserDropdown && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                transition={{ duration: 0.15 }}
+                                                className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-[55]"
                                             >
-                                                {user.role === 'admin' ? '⚙️ Admin Panel' : '📊 Dashboard'}
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setShowUserDropdown(false);
-                                                    handleSignOut();
-                                                }}
-                                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
-                                            >
-                                                🚪 Sign Out
-                                            </button>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                                                <div className="px-4 py-2 border-b border-gray-100">
+                                                    <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                                                    <p className="text-xs text-gray-500">{user.email}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowUserDropdown(false);
+                                                        window.location.href = '/dashboard';
+                                                    }}
+                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                                                >
+                                                    {user.role === 'admin' ? '⚙️ Admin Panel' : '📊 Dashboard'}
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowUserDropdown(false);
+                                                        handleSignOut();
+                                                    }}
+                                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+                                                >
+                                                    🚪 Sign Out
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </>
                         ) : (
                             <Button
                                 onClick={handleLogin}
