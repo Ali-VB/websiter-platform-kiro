@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const migrationPath = path.join(__dirname, '..', 'docs', 'sql-scripts', 'notifications-table-simple.sql');
+const migrationPath = path.join(__dirname, '..', 'docs', 'sql-scripts', 'notifications-table-SAFE.sql');
 const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
 
 console.log('=== NOTIFICATIONS TABLE MIGRATION SQL ===');
