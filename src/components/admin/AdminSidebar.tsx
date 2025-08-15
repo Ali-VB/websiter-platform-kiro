@@ -5,7 +5,7 @@ import { useAllProjects } from '../../hooks/useProjects';
 import { SupabaseProjectAssetsService } from '../../services/supabase/projectAssets';
 import { Button } from '../common';
 
-type AdminView = 'kanban' | 'projects' | 'clients' | 'support' | 'payments' | 'assets' | 'storage' | 'settings' | 'debug' | 'database';
+type AdminView = 'kanban' | 'projects' | 'clients' | 'support' | 'payments' | 'assets' | 'storage' | 'settings' | 'debug' | 'database' | 'notifications';
 
 interface AdminSidebarProps {
     activeView: AdminView;
@@ -104,6 +104,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             label: 'Database Overview',
             icon: '📊',
             description: 'Database statistics',
+            badge: null,
+        },
+        {
+            id: 'notifications' as const,
+            label: 'Notifications',
+            icon: '🔔',
+            description: 'Manage notifications',
             badge: null,
         },
         {
