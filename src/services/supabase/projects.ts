@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase';
 import type { Database } from '../../types/database';
+import { AdminNotificationService } from './adminNotifications';
 
 type Tables = Database['public']['Tables'];
 type ProjectInsert = Tables['projects']['Insert'];
@@ -13,6 +14,8 @@ export interface CreateProjectData {
   description: string;
   priority?: 'low' | 'medium' | 'high';
   dueDate?: string;
+  clientName?: string;
+  clientEmail?: string;
 }
 
 // CreateTaskData interface removed - using simple approach without tasks
@@ -301,6 +304,15 @@ export class ProjectService {
       }
 
       console.log('Project created successfully:', project);
+      
+      // Notify admins of new project (don't await to avoid blocking)
+      AdminNotificationService.notifyProjectCreated({
+        projectId: project.id,
+        clientName: data.clientName || 'Unknown Client',
+        clientEmail: data.clientEmail || 'Unknown Email',
+        projectTitle: project.title
+      }).catch(error => console.error('Failed to send admin notification:', error));
+      
       return project;
     } catch (error) {
       console.error('Error creating project:', error);
@@ -445,6 +457,20 @@ export const updateProjectStatus = async (
   status: 'new' | 'submitted' | 'waiting_for_confirmation' | 'confirmed' | 'in_progress' | 'in_design' | 'review' | 'final_delivery' | 'completed'
 ): Promise<void> => {
   try {
+    // Get current project data for notification
+    const { data: currentProject } = await supabase
+      .from('projects')
+      .select(`
+        status,
+        title,
+        users!projects_client_id_fkey (
+          name,
+          email
+        )
+      `)
+      .eq('id', projectId)
+      .single();
+
     const { error } = await supabase
       .from('projects')
       .update({ 
@@ -454,6 +480,17 @@ export const updateProjectStatus = async (
       .eq('id', projectId);
 
     if (error) throw error;
+
+    // Notify admins of status change (don't await to avoid blocking)
+    if (currentProject && currentProject.users) {
+      AdminNotificationService.notifyProjectStatusChange({
+        projectId,
+        clientName: currentProject.users.name || 'Unknown Client',
+        projectTitle: currentProject.title,
+        oldStatus: currentProject.status,
+        newStatus: status
+      }).catch(error => console.error('Failed to send admin notification:', error));
+    }
   } catch (error) {
     console.error('Error updating project status:', error);
     throw error;

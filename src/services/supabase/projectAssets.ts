@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase';
+import { AdminNotificationService } from './adminNotifications';
 
 export interface ProjectAsset {
     id: string;
@@ -60,10 +61,45 @@ export class SupabaseProjectAssetsService {
                 throw new Error(`Database error: ${error.message}`);
             }
 
+            // Notify admins of asset upload (don't await to avoid blocking)
+            this.notifyAssetUploaded(data, projectId).catch(error => 
+                console.error('Failed to send admin notification:', error)
+            );
+
             return data;
         } catch (error) {
             console.error('Asset upload error:', error);
             throw error;
+        }
+    }
+
+    // Helper method to notify admins of asset upload
+    private static async notifyAssetUploaded(asset: ProjectAsset, projectId: string) {
+        try {
+            // Get project and client info
+            const { data: project } = await supabase
+                .from('projects')
+                .select(`
+                    title,
+                    users!projects_client_id_fkey (
+                        name,
+                        email
+                    )
+                `)
+                .eq('id', projectId)
+                .single();
+
+            if (project && project.users) {
+                await AdminNotificationService.notifyAssetsUploaded({
+                    projectId,
+                    clientName: project.users.name || 'Unknown Client',
+                    clientEmail: project.users.email || 'Unknown Email',
+                    fileCount: 1, // Single file upload
+                    projectTitle: project.title
+                });
+            }
+        } catch (error) {
+            console.error('Failed to get project info for notification:', error);
         }
     }
 
