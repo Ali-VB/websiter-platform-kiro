@@ -133,14 +133,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
     return (
         <motion.div
-            className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
+            className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-all duration-300 flex flex-col ${isCollapsed ? 'w-16' : 'w-64'
                 }`}
             initial={{ x: -100 }}
             animate={{ x: 0 }}
             transition={{ duration: 0.3 }}
         >
             {/* Header */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 border-b border-gray-200 flex-shrink-0">
                 <div className="flex items-center justify-between">
                     {!isCollapsed && (
                         <div className="flex items-center gap-2">
@@ -196,7 +196,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
 
             {/* User Section */}
-            <div className="p-4 border-t border-gray-200">
+            <div className="p-4 border-t border-gray-200 flex-shrink-0">
                 {!isCollapsed ? (
                     <div className="space-y-3">
                         <div className="flex items-center gap-3">
