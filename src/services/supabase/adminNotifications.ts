@@ -84,27 +84,6 @@ export class AdminNotificationService {
     try {
       console.log('🔔 Creating admin notification for asset upload:', assetData.fileCount, 'files');
       
-      // Check if current user is admin before creating notification
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.log('❌ No authenticated user, skipping notification');
-        return;
-      }
-
-      // Get current user's role
-      const { data: currentUser } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (currentUser?.role !== 'admin') {
-        console.log('ℹ️ Non-admin user triggered notification, skipping for now (RLS restriction)');
-        console.log('📝 TODO: Implement server-side notification creation for client actions');
-        return;
-      }
-
       await NotificationService.createGlobalNotification({
         title: '📁 New Assets Uploaded',
         message: `${assetData.clientName} uploaded ${assetData.fileCount} file(s) to project "${assetData.projectTitle}"`,
@@ -129,24 +108,6 @@ export class AdminNotificationService {
   }) {
     try {
       console.log('🔔 Creating admin notification for support ticket:', ticketData.subject);
-      
-      // Check if current user is admin
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log('❌ No authenticated user, skipping notification');
-        return;
-      }
-
-      const { data: currentUser } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (currentUser?.role !== 'admin') {
-        console.log('ℹ️ Non-admin user triggered notification, skipping for now (RLS restriction)');
-        return;
-      }
       
       const priorityEmoji = ticketData.priority === 'high' ? '🚨' : ticketData.priority === 'medium' ? '⚠️' : '📝';
       
