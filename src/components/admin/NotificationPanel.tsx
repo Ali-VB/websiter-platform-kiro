@@ -119,14 +119,18 @@ export const NotificationPanel: React.FC = () => {
                 </div>
             )}
 
-            {/* Debug info */}
-            <div className="mb-4 p-2 bg-gray-50 border border-gray-200 rounded text-xs">
-                <strong>Debug:</strong> Loading: {loading ? 'true' : 'false'}, UsersLoaded: {usersLoaded ? 'true' : 'false'}, Users count: {users.length}
-                {loadError && <div className="text-red-600 mt-1"><strong>Error:</strong> {loadError}</div>}
-                <div className="mt-1">
-                    <strong>LocalStorage:</strong> {localStorage.getItem(USERS_STORAGE_KEY) ? `${JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]').length} users saved` : 'No saved users'}
+            {/* Error message */}
+            {loadError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded">
+                    <p className="text-red-800">❌ Error loading users: {loadError}</p>
+                    <button
+                        onClick={() => setLoadError(null)}
+                        className="mt-2 text-sm text-red-600 hover:text-red-800"
+                    >
+                        Dismiss
+                    </button>
                 </div>
-            </div>
+            )}
 
             {!usersLoaded ? (
                 <div className="mb-4">
@@ -138,26 +142,8 @@ export const NotificationPanel: React.FC = () => {
                         {loading ? 'Loading Users...' : 'Load Users'}
                     </button>
                     <p className="text-sm text-gray-600 mt-2">
-                        Click to load client users from the database
+                        Load client users to send targeted notifications
                     </p>
-
-                    {/* Manual test button */}
-                    <button
-                        onClick={async () => {
-                            console.log('🧪 Manual test: calling getClientUsers directly...');
-                            try {
-                                const result = await NotificationService.getClientUsers();
-                                console.log('🧪 Manual test result:', result);
-                                alert(`Manual test: Found ${result.length} users`);
-                            } catch (error) {
-                                console.error('🧪 Manual test error:', error);
-                                alert(`Manual test failed: ${error}`);
-                            }
-                        }}
-                        className="mt-2 px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                    >
-                        🧪 Test getClientUsers
-                    </button>
                 </div>
             ) : (
                 <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded">
@@ -172,17 +158,7 @@ export const NotificationPanel: React.FC = () => {
                         >
                             Reload Users
                         </button>
-                        <button
-                            onClick={() => {
-                                setUsers([]);
-                                setUsersLoaded(false);
-                                localStorage.removeItem(USERS_STORAGE_KEY);
-                                console.log('🗑️ Cleared users cache');
-                            }}
-                            className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
-                        >
-                            Clear Cache
-                        </button>
+
                     </div>
                 </div>
             )}

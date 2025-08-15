@@ -202,12 +202,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
             case 'database':
                 return <StandaloneDatabaseOverview key="standalone-db-overview" />;
             case 'notifications':
-                return (
-                    <div className="space-y-6">
-                        <NotificationTest />
-                        <NotificationPanel />
-                    </div>
-                );
+                return <NotificationPanel />;
             default:
                 return (
                     <div>
