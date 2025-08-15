@@ -18,6 +18,7 @@ import { ProjectManagementList } from './ProjectManagement';
 import { ClientList } from './ClientManagement';
 import { ProjectAssets } from './ProjectAssets';
 import { StorageManagement } from './StorageManagement';
+import { NotificationTest } from '../debug/NotificationTest';
 
 import { UserSyncService } from '../../services/supabase/userSync';
 
@@ -194,7 +195,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
             case 'settings':
                 return <AdminSettings />;
             case 'debug':
-                return <DebugDashboard />;
+                return (
+                    <div className="space-y-6">
+                        <NotificationTest />
+                        <DebugDashboard />
+                    </div>
+                );
             case 'database':
                 return <StandaloneDatabaseOverview key="standalone-db-overview" />;
             default:
