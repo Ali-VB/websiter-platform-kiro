@@ -49,7 +49,7 @@ export const NotificationPanel: React.FC = () => {
                 is_global: false
             });
 
-            alert('Notification created successfully!');
+            alert(`Notification created successfully! ${formData.is_global ? 'Sent to all users' : 'Sent to selected user'}`);
         } catch (error) {
             console.error('Failed to create notification:', error);
             alert('Failed to create notification');
@@ -61,14 +61,32 @@ export const NotificationPanel: React.FC = () => {
         <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Create Notification</h2>
 
-            {!usersLoaded && (
-                <button
-                    onClick={loadUsers}
-                    disabled={loading}
-                    className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-                >
-                    {loading ? 'Loading Users...' : 'Load Users'}
-                </button>
+            {!usersLoaded ? (
+                <div className="mb-4">
+                    <button
+                        onClick={loadUsers}
+                        disabled={loading}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                    >
+                        {loading ? 'Loading Users...' : 'Load Users'}
+                    </button>
+                    <p className="text-sm text-gray-600 mt-2">
+                        Click to load client users from the database
+                    </p>
+                </div>
+            ) : (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded">
+                    <p className="text-green-800 font-medium">
+                        ✅ Users Loaded: {users.length} client users available
+                    </p>
+                    <button
+                        onClick={loadUsers}
+                        disabled={loading}
+                        className="mt-2 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                    >
+                        Reload Users
+                    </button>
+                </div>
             )}
 
             {usersLoaded && (

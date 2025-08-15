@@ -1,5 +1,7 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { NotificationService } from '../../services/supabase/notificationService';
+
+const STORAGE_KEY = 'notification-test-results';
 
 /**
  * Simple test component to verify notification system works
@@ -8,27 +10,45 @@ import { NotificationService } from '../../services/supabase/notificationService
 export const NotificationTest: React.FC = () => {
     const [testResults, setTestResults] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const resultsRef = useRef<string[]>([]);
     const [renderCount, setRenderCount] = useState(0);
+
+    // Load results from localStorage on mount
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsedResults = JSON.parse(saved);
+                console.log('Loading saved results:', parsedResults);
+                setTestResults(parsedResults);
+            }
+        } catch (error) {
+            console.error('Failed to load saved results:', error);
+        }
+    }, []);
 
     // Track re-renders
     useEffect(() => {
         setRenderCount(prev => prev + 1);
-        console.log(`NotificationTest render #${renderCount + 1}`);
+        console.log(`NotificationTest render #${renderCount + 1}, Results count: ${testResults.length}`);
     });
 
     const addResult = useCallback((message: string) => {
         const timestamp = new Date().toLocaleTimeString();
         const resultMessage = `${timestamp}: ${message}`;
-        console.log('Adding result:', resultMessage); // Debug log
-
-        // Store in ref for persistence
-        resultsRef.current = [...resultsRef.current, resultMessage];
+        console.log('Adding result:', resultMessage);
 
         setTestResults(prev => {
             const newResults = [...prev, resultMessage];
-            console.log('New results array:', newResults); // Debug log
-            console.log('Results ref:', resultsRef.current); // Debug log
+            console.log('New results array length:', newResults.length);
+
+            // Save to localStorage immediately
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(newResults));
+                console.log('Saved to localStorage:', newResults.length, 'items');
+            } catch (error) {
+                console.error('Failed to save to localStorage:', error);
+            }
+
             return newResults;
         });
     }, []);
@@ -84,18 +104,15 @@ export const NotificationTest: React.FC = () => {
     }, [addResult]);
 
     const clearResults = useCallback(() => {
-        console.log('Clearing results...'); // Debug log
-        resultsRef.current = [];
+        console.log('Clearing results...');
         setTestResults([]);
-    }, []);
-
-    // Restore results from ref if state was lost
-    useEffect(() => {
-        if (resultsRef.current.length > 0 && testResults.length === 0) {
-            console.log('Restoring results from ref:', resultsRef.current);
-            setTestResults(resultsRef.current);
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+            console.log('Cleared localStorage');
+        } catch (error) {
+            console.error('Failed to clear localStorage:', error);
         }
-    }, [testResults]);
+    }, []);
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
@@ -171,16 +188,28 @@ export const NotificationTest: React.FC = () => {
 
             {/* Debug info */}
             <div className="mt-4 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-                <strong>Debug:</strong> Results array length: {testResults.length}, Loading: {isLoading ? 'true' : 'false'}, Renders: {renderCount}, Ref length: {resultsRef.current.length}
+                <strong>Debug:</strong> Results array length: {testResults.length}, Loading: {isLoading ? 'true' : 'false'}, Renders: {renderCount}
+                <br />
+                <strong>LocalStorage:</strong> {localStorage.getItem(STORAGE_KEY) ? `${JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]').length} items saved` : 'No saved data'}
             </div>
 
             {/* Show success message if user fetching worked */}
-            {resultsRef.current.some(r => r.includes('User fetching test PASSED')) && (
+            {testResults.some(r => r.includes('User fetching test PASSED')) && (
                 <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded">
                     <strong className="text-green-800">✅ SUCCESS!</strong>
                     <p className="text-green-700 text-sm mt-1">
-                        User fetching is working! Found {resultsRef.current.find(r => r.includes('PASSED'))?.match(/(\d+) client users/)?.[1] || 'some'} client users.
+                        User fetching is working! Found {testResults.find(r => r.includes('PASSED'))?.match(/(\d+) client users/)?.[1] || 'some'} client users.
                         The notification system backend is functional.
+                    </p>
+                </div>
+            )}
+
+            {/* Show notification test success */}
+            {testResults.some(r => r.includes('Notification test PASSED')) && (
+                <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded">
+                    <strong className="text-blue-800">🔔 NOTIFICATIONS WORKING!</strong>
+                    <p className="text-blue-700 text-sm mt-1">
+                        Notification fetching is working! Found {testResults.find(r => r.includes('Notification test PASSED'))?.match(/(\d+) notifications/)?.[1] || 'some'} notifications.
                     </p>
                 </div>
             )}
