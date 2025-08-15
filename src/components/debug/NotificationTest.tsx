@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { NotificationService } from '../../services/supabase/notificationService';
 
 /**
@@ -8,14 +8,27 @@ import { NotificationService } from '../../services/supabase/notificationService
 export const NotificationTest: React.FC = () => {
     const [testResults, setTestResults] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const resultsRef = useRef<string[]>([]);
+    const [renderCount, setRenderCount] = useState(0);
+
+    // Track re-renders
+    useEffect(() => {
+        setRenderCount(prev => prev + 1);
+        console.log(`NotificationTest render #${renderCount + 1}`);
+    });
 
     const addResult = useCallback((message: string) => {
         const timestamp = new Date().toLocaleTimeString();
         const resultMessage = `${timestamp}: ${message}`;
         console.log('Adding result:', resultMessage); // Debug log
+
+        // Store in ref for persistence
+        resultsRef.current = [...resultsRef.current, resultMessage];
+
         setTestResults(prev => {
             const newResults = [...prev, resultMessage];
             console.log('New results array:', newResults); // Debug log
+            console.log('Results ref:', resultsRef.current); // Debug log
             return newResults;
         });
     }, []);
@@ -72,8 +85,17 @@ export const NotificationTest: React.FC = () => {
 
     const clearResults = useCallback(() => {
         console.log('Clearing results...'); // Debug log
+        resultsRef.current = [];
         setTestResults([]);
     }, []);
+
+    // Restore results from ref if state was lost
+    useEffect(() => {
+        if (resultsRef.current.length > 0 && testResults.length === 0) {
+            console.log('Restoring results from ref:', resultsRef.current);
+            setTestResults(resultsRef.current);
+        }
+    }, [testResults]);
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
@@ -149,8 +171,19 @@ export const NotificationTest: React.FC = () => {
 
             {/* Debug info */}
             <div className="mt-4 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-                <strong>Debug:</strong> Results array length: {testResults.length}, Loading: {isLoading ? 'true' : 'false'}
+                <strong>Debug:</strong> Results array length: {testResults.length}, Loading: {isLoading ? 'true' : 'false'}, Renders: {renderCount}, Ref length: {resultsRef.current.length}
             </div>
+
+            {/* Show success message if user fetching worked */}
+            {resultsRef.current.some(r => r.includes('User fetching test PASSED')) && (
+                <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded">
+                    <strong className="text-green-800">✅ SUCCESS!</strong>
+                    <p className="text-green-700 text-sm mt-1">
+                        User fetching is working! Found {resultsRef.current.find(r => r.includes('PASSED'))?.match(/(\d+) client users/)?.[1] || 'some'} client users.
+                        The notification system backend is functional.
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
