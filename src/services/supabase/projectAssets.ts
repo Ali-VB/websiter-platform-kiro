@@ -62,8 +62,9 @@ export class SupabaseProjectAssetsService {
             }
 
             // Notify admins of asset upload (don't await to avoid blocking)
+            console.log('🔔 Triggering asset upload notification for project:', projectId);
             this.notifyAssetUploaded(data, projectId).catch(error => 
-                console.error('Failed to send admin notification:', error)
+                console.error('❌ Failed to send admin notification:', error)
             );
 
             return data;
@@ -76,6 +77,7 @@ export class SupabaseProjectAssetsService {
     // Helper method to notify admins of asset upload
     private static async notifyAssetUploaded(asset: ProjectAsset, projectId: string) {
         try {
+            console.log('🔍 Getting project info for notification, projectId:', projectId);
             // Get project and client info
             const { data: project } = await supabase
                 .from('projects')
@@ -89,7 +91,9 @@ export class SupabaseProjectAssetsService {
                 .eq('id', projectId)
                 .single();
 
+            console.log('📊 Project data retrieved:', project);
             if (project && project.users) {
+                console.log('✅ Calling AdminNotificationService.notifyAssetsUploaded');
                 await AdminNotificationService.notifyAssetsUploaded({
                     projectId,
                     clientName: project.users.name || 'Unknown Client',
@@ -97,6 +101,8 @@ export class SupabaseProjectAssetsService {
                     fileCount: 1, // Single file upload
                     projectTitle: project.title
                 });
+            } else {
+                console.log('❌ No project or user data found for notification');
             }
         } catch (error) {
             console.error('Failed to get project info for notification:', error);

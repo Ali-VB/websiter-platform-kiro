@@ -165,7 +165,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             </div>
 
             {/* Navigation */}
-            <div className="flex-1 py-4 overflow-y-auto">
+            <div className="flex-1 py-4 overflow-y-auto min-h-0">
                 <nav className="space-y-1 px-2">
                     {navigationItems.map((item) => (
                         <button
