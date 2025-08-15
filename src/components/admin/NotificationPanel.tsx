@@ -6,6 +6,7 @@ export const NotificationPanel: React.FC = () => {
     const [users, setUsers] = useState<CustomUser[]>([]);
     const [loading, setLoading] = useState(false);
     const [usersLoaded, setUsersLoaded] = useState(false);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -16,16 +17,26 @@ export const NotificationPanel: React.FC = () => {
     });
 
     const loadUsers = async () => {
+        console.log('🔄 Starting to load users...');
         setLoading(true);
         try {
+            console.log('📞 Calling NotificationService.getClientUsers()...');
             const clientUsers = await NotificationService.getClientUsers();
+            console.log('✅ Users loaded successfully:', clientUsers.length, 'users');
+            console.log('👥 User details:', clientUsers);
+
             setUsers(clientUsers);
             setUsersLoaded(true);
+
+            console.log('🎯 State updated: usersLoaded=true, users.length=', clientUsers.length);
         } catch (error) {
-            console.error('Failed to load users:', error);
-            alert('Failed to load users');
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.error('❌ Failed to load users:', error);
+            setLoadError(errorMessage);
+            setUsersLoaded(false);
         }
         setLoading(false);
+        console.log('🏁 Load users completed');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -61,6 +72,12 @@ export const NotificationPanel: React.FC = () => {
         <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Create Notification</h2>
 
+            {/* Debug info */}
+            <div className="mb-4 p-2 bg-gray-50 border border-gray-200 rounded text-xs">
+                <strong>Debug:</strong> Loading: {loading ? 'true' : 'false'}, UsersLoaded: {usersLoaded ? 'true' : 'false'}, Users count: {users.length}
+                {loadError && <div className="text-red-600 mt-1"><strong>Error:</strong> {loadError}</div>}
+            </div>
+
             {!usersLoaded ? (
                 <div className="mb-4">
                     <button
@@ -73,6 +90,24 @@ export const NotificationPanel: React.FC = () => {
                     <p className="text-sm text-gray-600 mt-2">
                         Click to load client users from the database
                     </p>
+
+                    {/* Manual test button */}
+                    <button
+                        onClick={async () => {
+                            console.log('🧪 Manual test: calling getClientUsers directly...');
+                            try {
+                                const result = await NotificationService.getClientUsers();
+                                console.log('🧪 Manual test result:', result);
+                                alert(`Manual test: Found ${result.length} users`);
+                            } catch (error) {
+                                console.error('🧪 Manual test error:', error);
+                                alert(`Manual test failed: ${error}`);
+                            }
+                        }}
+                        className="mt-2 px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    >
+                        🧪 Test getClientUsers
+                    </button>
                 </div>
             ) : (
                 <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded">
