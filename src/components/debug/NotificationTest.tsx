@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { NotificationService } from '../../services/supabase/notificationService';
 
 /**
@@ -9,19 +9,30 @@ export const NotificationTest: React.FC = () => {
     const [testResults, setTestResults] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const addResult = (message: string) => {
-        setTestResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
-    };
+    const addResult = useCallback((message: string) => {
+        const timestamp = new Date().toLocaleTimeString();
+        const resultMessage = `${timestamp}: ${message}`;
+        console.log('Adding result:', resultMessage); // Debug log
+        setTestResults(prev => {
+            const newResults = [...prev, resultMessage];
+            console.log('New results array:', newResults); // Debug log
+            return newResults;
+        });
+    }, []);
 
-    const runUserFetchingTest = async () => {
+    const runUserFetchingTest = useCallback(async () => {
+        console.log('Starting user fetching test...'); // Debug log
         setIsLoading(true);
         addResult('🧪 Starting user fetching test...');
 
         try {
             // Add a small delay to ensure the "Starting" message is visible
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
 
+            console.log('Calling NotificationService.testUserFetching()...'); // Debug log
             const result = await NotificationService.testUserFetching();
+            console.log('User fetching result:', result); // Debug log
+
             if (result.success) {
                 addResult(`✅ User fetching test PASSED: ${result.userCount} client users found`);
                 addResult(`📊 User fetching details: Found ${result.userCount} client users in database`);
@@ -29,18 +40,21 @@ export const NotificationTest: React.FC = () => {
                 addResult(`❌ User fetching test FAILED: ${result.error}`);
             }
         } catch (error) {
+            console.error('User fetching test error:', error); // Debug log
             addResult(`❌ User fetching test ERROR: ${error instanceof Error ? error.message : String(error)}`);
         }
 
         setIsLoading(false);
-    };
+    }, [addResult]);
 
-    const runNotificationTest = async () => {
+    const runNotificationTest = useCallback(async () => {
+        console.log('Starting notification test...'); // Debug log
         setIsLoading(true);
         addResult('🧪 Starting notification fetching test...');
 
         try {
             const result = await NotificationService.getUserNotifications(1, 5);
+            console.log('Notification test result:', result); // Debug log
             addResult(`✅ Notification test PASSED: ${result.notifications.length} notifications, total: ${result.totalCount}`);
 
             // Log first notification for debugging
@@ -49,15 +63,17 @@ export const NotificationTest: React.FC = () => {
                 addResult(`📋 First notification: "${first.title}" (${first.type})`);
             }
         } catch (error) {
+            console.error('Notification test error:', error); // Debug log
             addResult(`❌ Notification test FAILED: ${error}`);
         }
 
         setIsLoading(false);
-    };
+    }, [addResult]);
 
-    const clearResults = () => {
+    const clearResults = useCallback(() => {
+        console.log('Clearing results...'); // Debug log
         setTestResults([]);
-    };
+    }, []);
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
@@ -117,18 +133,23 @@ export const NotificationTest: React.FC = () => {
             )}
 
             <div className="bg-gray-100 p-4 rounded max-h-96 overflow-y-auto">
-                <h3 className="font-semibold mb-2">Test Results:</h3>
+                <h3 className="font-semibold mb-2">Test Results: (Count: {testResults.length})</h3>
                 {testResults.length === 0 ? (
                     <p className="text-gray-500">No tests run yet. Click a test button above.</p>
                 ) : (
                     <div className="space-y-1">
                         {testResults.map((result, index) => (
-                            <div key={index} className="text-sm font-mono">
+                            <div key={index} className="text-sm font-mono bg-white p-2 rounded border">
                                 {result}
                             </div>
                         ))}
                     </div>
                 )}
+            </div>
+
+            {/* Debug info */}
+            <div className="mt-4 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                <strong>Debug:</strong> Results array length: {testResults.length}, Loading: {isLoading ? 'true' : 'false'}
             </div>
         </div>
     );
