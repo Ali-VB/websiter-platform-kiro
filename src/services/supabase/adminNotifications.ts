@@ -20,6 +20,55 @@ export class AdminNotificationService {
     }
   }
 
+  /**
+   * Create notifications specifically for admin users only (not global)
+   */
+  private static async createAdminOnlyNotifications(notificationData: {
+    title: string;
+    message: string;
+    type: 'info' | 'success' | 'warning' | 'error';
+  }) {
+    try {
+      console.log('🎯 Creating admin-only notifications');
+      
+      // Get all admin user IDs
+      const adminUserIds = await this.getAdminUserIds();
+      
+      if (adminUserIds.length === 0) {
+        console.log('⚠️ No admin users found, skipping notification');
+        return;
+      }
+
+      console.log(`📤 Creating notifications for ${adminUserIds.length} admin users`);
+
+      // Create individual notifications for each admin
+      const notifications = adminUserIds.map(adminId => ({
+        title: notificationData.title,
+        message: notificationData.message,
+        type: notificationData.type,
+        recipient_id: adminId,
+        is_global: false,
+        is_read: false
+      }));
+
+      const { data, error } = await supabase
+        .from('notifications')
+        .insert(notifications)
+        .select();
+
+      if (error) {
+        console.error('❌ Failed to create admin notifications:', error);
+        throw error;
+      }
+
+      console.log(`✅ Created ${data?.length || 0} admin notifications`);
+      return data;
+    } catch (error) {
+      console.error('❌ Failed to create admin-only notifications:', error);
+      throw error;
+    }
+  }
+
 
 
   /**
@@ -34,7 +83,8 @@ export class AdminNotificationService {
     try {
       console.log('🔔 Creating admin notification for new project:', projectData.projectTitle);
       
-      await NotificationService.createGlobalNotification({
+      // Create notifications for each admin user specifically
+      await this.createAdminOnlyNotifications({
         title: '🚀 New Project Created',
         message: `${projectData.clientName} (${projectData.clientEmail}) has created a new project: "${projectData.projectTitle}"`,
         type: 'info'
@@ -59,7 +109,8 @@ export class AdminNotificationService {
     try {
       console.log('🔔 Creating admin notification for payment:', paymentData.amount);
       
-      await NotificationService.createGlobalNotification({
+      // Create notifications for each admin user specifically
+      await this.createAdminOnlyNotifications({
         title: '💳 Payment Received',
         message: `${paymentData.clientName} completed payment of $${paymentData.amount} for project "${paymentData.projectTitle}"`,
         type: 'success'
@@ -84,7 +135,8 @@ export class AdminNotificationService {
     try {
       console.log('🔔 Creating admin notification for asset upload:', assetData.fileCount, 'files');
       
-      await NotificationService.createGlobalNotification({
+      // Create notifications for each admin user specifically
+      await this.createAdminOnlyNotifications({
         title: '📁 New Assets Uploaded',
         message: `${assetData.clientName} uploaded ${assetData.fileCount} file(s) to project "${assetData.projectTitle}"`,
         type: 'info'
@@ -111,7 +163,8 @@ export class AdminNotificationService {
       
       const priorityEmoji = ticketData.priority === 'high' ? '🚨' : ticketData.priority === 'medium' ? '⚠️' : '📝';
       
-      await NotificationService.createGlobalNotification({
+      // Create notifications for each admin user specifically
+      await this.createAdminOnlyNotifications({
         title: `${priorityEmoji} New Support Ticket`,
         message: `${ticketData.clientName} created a ${ticketData.priority} priority ticket: "${ticketData.subject}"`,
         type: ticketData.priority === 'high' ? 'warning' : 'info'
@@ -145,7 +198,8 @@ export class AdminNotificationService {
       const statusEmoji = statusData.newStatus === 'completed' ? '🎉' : 
                          statusData.newStatus === 'confirmed' ? '✅' : '📋';
       
-      await NotificationService.createGlobalNotification({
+      // Create notifications for each admin user specifically
+      await this.createAdminOnlyNotifications({
         title: `${statusEmoji} Project Status Updated`,
         message: `Project "${statusData.projectTitle}" by ${statusData.clientName} is now ${statusData.newStatus}`,
         type: statusData.newStatus === 'completed' ? 'success' : 'info'
