@@ -12,11 +12,56 @@ export class AdminNotificationService {
    */
   private static async getAdminUserIds(): Promise<string[]> {
     try {
+      console.log('🔍 Getting admin user list...');
       const { customUsers } = await UserSyncService.getAdminUserList();
-      return customUsers.filter(u => u.role === 'admin').map(u => u.id);
+      console.log('📊 All users from UserSyncService:', customUsers);
+      
+      const adminUsers = customUsers.filter(u => u.role === 'admin');
+      console.log('👑 Admin users found:', adminUsers);
+      
+      const adminIds = adminUsers.map(u => u.id);
+      console.log('🆔 Admin user IDs:', adminIds);
+      
+      return adminIds;
     } catch (error) {
       console.error('Failed to get admin users:', error);
       return [];
+    }
+  }
+
+  /**
+   * Test RLS policy directly
+   */
+  static async testRLSPolicy() {
+    try {
+      console.log('🧪 Testing RLS policy with known admin ID...');
+      
+      const testNotification = {
+        title: 'Test Notification',
+        message: 'Testing RLS policy',
+        type: 'info',
+        recipient_id: 'ac39f418-b341-4864-b451-adfe64e8133c', // Known admin ID
+        is_global: false,
+        is_read: false
+      };
+
+      console.log('📋 Test notification data:', testNotification);
+
+      const { data, error } = await supabase
+        .from('notifications')
+        .insert([testNotification])
+        .select();
+
+      if (error) {
+        console.error('❌ RLS test failed:', error);
+        return { success: false, error };
+      }
+
+      console.log('✅ RLS test passed:', data);
+      return { success: true, data };
+    } catch (error) {
+      console.error('❌ RLS test error:', error);
+      return { success: false, error };
     }
   }
 
@@ -40,6 +85,7 @@ export class AdminNotificationService {
       }
 
       console.log(`📤 Creating notifications for ${adminUserIds.length} admin users`);
+      console.log('🔍 Admin user IDs:', adminUserIds);
 
       // Create individual notifications for each admin
       const notifications = adminUserIds.map(adminId => ({
@@ -50,6 +96,8 @@ export class AdminNotificationService {
         is_global: false,
         is_read: false
       }));
+
+      console.log('📋 Notification data being inserted:', notifications);
 
       const { data, error } = await supabase
         .from('notifications')
