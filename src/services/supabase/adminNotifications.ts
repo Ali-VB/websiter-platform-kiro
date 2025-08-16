@@ -57,6 +57,11 @@ export class AdminNotificationService {
         .select();
 
       if (error) {
+        if (error.code === '42501') {
+          console.log('⚠️ RLS policy blocking notification creation. Please run the SQL fix in Supabase.');
+          console.log('📋 SQL needed: CREATE POLICY "Allow creating notifications for admin users" ON notifications FOR INSERT WITH CHECK (auth.uid() IS NOT NULL AND ((recipient_id IS NOT NULL AND EXISTS (SELECT 1 FROM users WHERE users.id = recipient_id AND users.role = \'admin\')) OR (is_global = true AND recipient_id IS NULL)));');
+          return; // Skip error to prevent breaking the main functionality
+        }
         console.error('❌ Failed to create admin notifications:', error);
         throw error;
       }
