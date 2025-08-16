@@ -7,17 +7,17 @@ import { AdminSidebar } from './AdminSidebar';
 import { KanbanBoard } from './KanbanBoard';
 import { SupportManagement } from './SupportManagement';
 import { DebugDashboard } from './DebugDashboard';
-import { DatabaseOverview } from './DatabaseOverview';
-import { SimpleDatabaseOverview } from './SimpleDatabaseOverview';
 import { StandaloneDatabaseOverview } from './StandaloneDatabaseOverview';
 import { AdminSettings } from './AdminSettings';
 import { PaymentManagement } from './PaymentManagement';
 import { ProjectFilters } from './ProjectFilters';
-import { ProjectStats } from './ProjectStats';
 import { ProjectManagementList } from './ProjectManagement';
 import { ClientList } from './ClientManagement';
 import { ProjectAssets } from './ProjectAssets';
 import { StorageManagement } from './StorageManagement';
+import { NotificationTest } from '../debug/NotificationTest';
+import { NotificationBell } from '../notifications/NotificationBell';
+import { NotificationPanel } from './NotificationPanel';
 
 import { UserSyncService } from '../../services/supabase/userSync';
 
@@ -26,12 +26,11 @@ import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 
 import {
-    FunnelIcon,
-    ChartBarIcon
+    FunnelIcon
 } from '@heroicons/react/24/outline';
 import { fadeInUp } from '../../utils/motion';
 
-type AdminView = 'kanban' | 'projects' | 'clients' | 'support' | 'payments' | 'assets' | 'storage' | 'settings' | 'debug' | 'database';
+type AdminView = 'kanban' | 'projects' | 'clients' | 'support' | 'payments' | 'assets' | 'storage' | 'settings' | 'debug' | 'database' | 'notifications';
 
 interface AdminDashboardProps {
     className?: string;
@@ -194,9 +193,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
             case 'settings':
                 return <AdminSettings />;
             case 'debug':
-                return <DebugDashboard />;
+                return (
+                    <div className="space-y-6">
+                        <NotificationTest />
+                        <DebugDashboard />
+                    </div>
+                );
             case 'database':
                 return <StandaloneDatabaseOverview key="standalone-db-overview" />;
+            case 'notifications':
+                return <NotificationPanel />;
             default:
                 return (
                     <div>
@@ -231,6 +237,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                 return '🔍 Debug Tools';
             case 'database':
                 return '📊 Database Overview';
+            case 'notifications':
+                return '🔔 Notifications';
             default:
                 return '📋 Kanban Board';
         }
@@ -258,6 +266,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                 return 'Debug tools and database inspection';
             case 'database':
                 return 'Complete database overview with relationships and statistics';
+            case 'notifications':
+                return 'Create and manage user notifications';
             default:
                 return 'Manage projects with drag-and-drop workflow';
         }
@@ -288,6 +298,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                         </div>
 
                         <div className="flex items-center space-x-3">
+                            <NotificationBell />
                             {activeView === 'kanban' && (
                                 <Button
                                     variant="outline"

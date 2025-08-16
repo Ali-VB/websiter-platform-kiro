@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase';
 import { StorageService, type FileUploadResult } from './storage';
+import { AdminNotificationService } from './adminNotifications';
 import type { Database } from '../../types/database';
 
 type Tables = Database['public']['Tables'];
@@ -94,6 +95,24 @@ export class TicketService {
       }
 
       console.log('✅ Ticket created successfully:', ticket);
+      
+      // Notify admins of new support ticket (don't await to avoid blocking)
+      console.log('🔔 Triggering support ticket notification:', ticket.subject);
+      console.log('📊 Ticket data for notification:', {
+        ticketId: ticket.id,
+        clientName: ticket.users?.name,
+        clientEmail: ticket.users?.email,
+        subject: ticket.subject,
+        priority: ticket.priority
+      });
+      AdminNotificationService.notifySupportTicketCreated({
+        ticketId: ticket.id,
+        clientName: ticket.users?.name || 'Unknown Client',
+        clientEmail: ticket.users?.email || 'Unknown Email',
+        subject: ticket.subject,
+        priority: ticket.priority
+      }).catch(error => console.error('❌ Failed to send admin notification:', error));
+      
       return ticket;
     } catch (error) {
       console.error('❌ Error creating ticket:', error);

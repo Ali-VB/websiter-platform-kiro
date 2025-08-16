@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase';
+import { AdminNotificationService } from './adminNotifications';
 
 export interface ProjectAsset {
     id: string;
@@ -60,10 +61,51 @@ export class SupabaseProjectAssetsService {
                 throw new Error(`Database error: ${error.message}`);
             }
 
+            // Notify admins of asset upload (don't await to avoid blocking)
+            console.log('🔔 Triggering asset upload notification for project:', projectId);
+            this.notifyAssetUploaded(data, projectId).catch(error => 
+                console.error('❌ Failed to send admin notification:', error)
+            );
+
             return data;
         } catch (error) {
             console.error('Asset upload error:', error);
             throw error;
+        }
+    }
+
+    // Helper method to notify admins of asset upload
+    private static async notifyAssetUploaded(asset: ProjectAsset, projectId: string) {
+        try {
+            console.log('🔍 Getting project info for notification, projectId:', projectId);
+            // Get project and client info
+            const { data: project } = await supabase
+                .from('projects')
+                .select(`
+                    title,
+                    users!projects_client_id_fkey (
+                        name,
+                        email
+                    )
+                `)
+                .eq('id', projectId)
+                .single();
+
+            console.log('📊 Project data retrieved:', project);
+            if (project && project.users) {
+                console.log('✅ Calling AdminNotificationService.notifyAssetsUploaded');
+                await AdminNotificationService.notifyAssetsUploaded({
+                    projectId,
+                    clientName: project.users.name || 'Unknown Client',
+                    clientEmail: project.users.email || 'Unknown Email',
+                    fileCount: 1, // Single file upload
+                    projectTitle: project.title
+                });
+            } else {
+                console.log('❌ No project or user data found for notification');
+            }
+        } catch (error) {
+            console.error('Failed to get project info for notification:', error);
         }
     }
 

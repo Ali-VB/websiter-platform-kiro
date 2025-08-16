@@ -11,6 +11,7 @@ import { DashboardGuide } from './DashboardGuide';
 import { SupportTickets } from './SupportTickets';
 import { PaymentHistory } from './PaymentHistory';
 import { DashboardSettings } from './DashboardSettings';
+import { NotificationBell } from '../notifications/NotificationBell';
 import { fadeInUp } from '../../utils/motion';
 
 type DashboardView = 'overview' | 'projects' | 'payments' | 'support' | 'settings';
@@ -289,7 +290,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onStartProject
                             </p>
                         </div>
                         <div className="flex items-center space-x-4">
-
+                            <NotificationBell />
                             <div className="text-sm text-neutral-500 font-sans">
                                 {user.name}
                             </div>
