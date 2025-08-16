@@ -165,6 +165,33 @@ export const NotificationTest: React.FC = () => {
                 >
                     Test Notification Bell
                 </button>
+
+                <button
+                    onClick={async () => {
+                        setIsLoading(true);
+                        addResult('🧪 Testing RLS policy directly...');
+                        try {
+                            // Import and test RLS policy
+                            const { AdminNotificationService } = await import('../../services/supabase/adminNotifications');
+                            const result = await AdminNotificationService.testRLSPolicy();
+
+                            if (result.success) {
+                                addResult('✅ RLS policy test PASSED');
+                                addResult(`📋 Created notification: ${JSON.stringify(result.data)}`);
+                            } else {
+                                addResult('❌ RLS policy test FAILED');
+                                addResult(`📋 Error: ${JSON.stringify(result.error)}`);
+                            }
+                        } catch (error) {
+                            addResult(`❌ RLS test error: ${error}`);
+                        }
+                        setIsLoading(false);
+                    }}
+                    disabled={isLoading}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+                >
+                    🧪 Test RLS Policy
+                </button>
             </div>
 
             {isLoading && (
