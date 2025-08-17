@@ -57,9 +57,10 @@ export function useProjects() {
     );
 
     return () => {
+      console.log('🧹 Cleaning up useProjects subscription');
       subscription.unsubscribe();
     };
-  }, [user]);
+  }, [user?.id]); // Only re-run when user ID changes
 
   return {
     projects,
@@ -165,9 +166,10 @@ export function useAllProjects() {
     );
 
     return () => {
+      console.log('🧹 Cleaning up useAllProjects subscription');
       subscription.unsubscribe();
     };
-  }, [user]);
+  }, [user?.id, user?.role]); // Only re-run when ID or role changes
 
   return {
     projects,
