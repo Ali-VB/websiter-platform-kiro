@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
 // Removed useWebsiteRequests - using only projects now
 import { useProjects } from '../../hooks/useProjects';
+import { useTabVisibility } from '../../hooks/useTabVisibility';
 import { LoadingSpinner, Button } from '../common';
 import { DashboardSidebar } from './DashboardSidebar';
 import { ProjectOverview } from './ProjectOverview';
@@ -23,6 +24,7 @@ interface ClientDashboardProps {
 export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onStartProject }) => {
     const { user } = useAuth();
     const { projects, loading: projectsLoading } = useProjects();
+    const isTabVisible = useTabVisibility();
 
     const [activeView, setActiveView] = useState<DashboardView>('overview');
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -39,6 +41,23 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onStartProject
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Handle tab visibility changes - refresh when tab becomes visible after being hidden
+    useEffect(() => {
+        let wasHidden = false;
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                wasHidden = true;
+            } else if (wasHidden) {
+                console.log('🔄 Tab became visible after being hidden - refreshing');
+                setTimeout(() => window.location.reload(), 100);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, []);
 
 
