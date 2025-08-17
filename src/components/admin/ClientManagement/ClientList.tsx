@@ -14,8 +14,7 @@ import {
     PhoneIcon,
     BuildingOfficeIcon,
     EyeIcon,
-    MagnifyingGlassIcon,
-    CalendarIcon
+    MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
 
 interface Client {

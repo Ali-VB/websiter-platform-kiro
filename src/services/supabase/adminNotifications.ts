@@ -1,4 +1,3 @@
-import { NotificationService } from './notificationService';
 import { UserSyncService } from './userSync';
 import { supabase } from '../../lib/supabase';
 import { createClient } from '@supabase/supabase-js';

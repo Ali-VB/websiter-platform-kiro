@@ -30,7 +30,6 @@ interface ClientDashboardSimulatorProps {
 
 export const ClientDashboardSimulator: React.FC<ClientDashboardSimulatorProps> = ({ onClose }) => {
     const [clients, setClients] = useState<Client[]>([]);
-    const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [simulatorView, setSimulatorView] = useState<'dashboard' | 'payments' | 'projects' | 'support'>('dashboard');
     const [loading, setLoading] = useState(true);
     const [simulatingAs, setSimulatingAs] = useState<Client | null>(null);
@@ -57,8 +56,8 @@ export const ClientDashboardSimulator: React.FC<ClientDashboardSimulatorProps> =
             // Get unique clients
             const uniqueClients = projectsData?.reduce((acc, project) => {
                 const client = project.users;
-                if (client && !acc.find(c => c.id === client.id)) {
-                    acc.push(client);
+                if (client && !acc.find(c => c.id === (client as any).id)) {
+                    acc.push(client as any);
                 }
                 return acc;
             }, [] as any[]) || [];
@@ -139,12 +138,10 @@ export const ClientDashboardSimulator: React.FC<ClientDashboardSimulatorProps> =
 
     const simulateClientView = (client: Client) => {
         setSimulatingAs(client);
-        setSelectedClient(client);
     };
 
     const stopSimulation = () => {
         setSimulatingAs(null);
-        setSelectedClient(null);
         setSimulatorView('dashboard');
     };
 
@@ -226,7 +223,7 @@ export const ClientDashboardSimulator: React.FC<ClientDashboardSimulatorProps> =
                         )}
                         {simulatorView === 'projects' && (
                             <div className="max-w-7xl mx-auto px-4 py-8">
-                                <ProjectOverview />
+                                <ProjectOverview projects={simulatingAs.projects || []} />
                             </div>
                         )}
                         {simulatorView === 'payments' && (

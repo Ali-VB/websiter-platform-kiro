@@ -124,7 +124,7 @@ export const DashboardSettings: React.FC = () => {
                         <div>
                             <div className="text-sm text-secondary-600 mb-1">Onboarding Status</div>
                             <div className="font-medium text-secondary-900">
-                                {user?.onboardingCompleted ? (
+                                {user?.onboarding_completed ? (
                                     <span className="text-success-600">✅ Completed</span>
                                 ) : (
                                     <span className="text-warning-600">⏳ In Progress</span>

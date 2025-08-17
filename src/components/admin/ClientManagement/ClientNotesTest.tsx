@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '../../common/Button';
 import { Card } from '../../common/Card';
 import { ClientNotesService } from '../../../services/supabase/clientNotes';
@@ -21,7 +21,7 @@ export const ClientNotesTest: React.FC = () => {
             addTestResult(`✅ Auth user: ${user.user?.email || 'No user'}`);
 
             // Test if client_notes table exists
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('client_notes')
                 .select('count(*)')
                 .limit(1);

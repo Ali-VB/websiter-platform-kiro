@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
 // Removed useWebsiteRequests - using only projects now
 import { useProjects } from '../../hooks/useProjects';
-import { useTabVisibility } from '../../hooks/useTabVisibility';
 import { LoadingSpinner, Button } from '../common';
 import { DashboardSidebar } from './DashboardSidebar';
 import { ProjectOverview } from './ProjectOverview';
@@ -24,7 +23,6 @@ interface ClientDashboardProps {
 export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onStartProject }) => {
     const { user } = useAuth();
     const { projects, loading: projectsLoading } = useProjects();
-    const isTabVisible = useTabVisibility();
 
     const [activeView, setActiveView] = useState<DashboardView>('overview');
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);

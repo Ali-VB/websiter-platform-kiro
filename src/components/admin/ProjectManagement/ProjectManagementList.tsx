@@ -9,7 +9,7 @@ import { LoadingSpinner } from '../../common/LoadingSpinner';
 import { Button } from '../../common/Button';
 import { Card } from '../../common/Card';
 import { useAllProjects } from '../../../hooks/useProjects';
-import { transformProjectForAdmin, ProjectService } from '../../../services/supabase/projects';
+import { transformProjectForAdmin } from '../../../services/supabase/projects';
 // Removed useWebsiteRequests - using only projects now
 import type { Project } from '../../../types';
 import {

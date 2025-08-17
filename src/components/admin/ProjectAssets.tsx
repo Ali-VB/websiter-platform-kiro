@@ -12,7 +12,6 @@ import {
     ArrowDownTrayIcon,
     FolderIcon,
     CalendarIcon,
-    UserIcon,
 } from '@heroicons/react/24/outline';
 
 interface ProjectAssetsProps {

@@ -12,8 +12,6 @@ import {
     PencilIcon,
     CogIcon,
     DocumentTextIcon,
-    EnvelopeIcon,
-    BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
 
 interface ProjectManageModalProps {
@@ -39,7 +37,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
     const [adminNotes, setAdminNotes] = useState(project.adminNotes || '');
     const [isEditingNotes, setIsEditingNotes] = useState(false);
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-    const [urgencyLevel, setUrgencyLevel] = useState(project.priority);
 
     // Time estimation state
     const [estimatedHours, setEstimatedHours] = useState(project.estimatedHours || 0);
@@ -90,20 +87,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
         }
     };
 
-    const handleUrgencyUpdate = async (newUrgency: string) => {
-        try {
-            setLoading(true);
-            setUrgencyLevel(newUrgency as any);
-            // TODO: Update urgency in database
-            console.log('Updated urgency to:', newUrgency);
-            onUpdate();
-        } catch (error) {
-            console.error('Failed to update urgency:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleTimeEstimationUpdate = async (e?: React.MouseEvent) => {
         e?.preventDefault();
         console.log('🚀 handleTimeEstimationUpdate called!');
@@ -129,7 +112,7 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
 
             console.log('✅ Time estimation saved successfully');
             onUpdate();
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to update time estimation:', error);
             console.error('Error details:', JSON.stringify(error, null, 2));
             alert(`Failed to save time estimation: ${error.message || 'Unknown error'}`);
@@ -179,7 +162,7 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
 
             console.log('✅ Todo list saved successfully');
             onUpdate();
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to save todo list:', error);
             console.error('Error details:', JSON.stringify(error, null, 2));
             alert(`Failed to save todo list: ${error.message || 'Unknown error'}`);
@@ -362,6 +345,20 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
                                         onChange={(e) => setEstimatedHours(parseInt(e.target.value) || 0)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="e.g., 40"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Total Days Estimated
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="365"
+                                        value={estimatedDays}
+                                        onChange={(e) => setEstimatedDays(parseInt(e.target.value) || 0)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="e.g., 10"
                                     />
                                 </div>
                                 <div>
@@ -647,7 +644,7 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
                                     try {
                                         await ProjectService.testDatabaseConnection(project.id);
                                         alert('Database connection test passed!');
-                                    } catch (error) {
+                                        } catch (error: any) {
                                         console.error('Database test failed:', error);
                                         alert(`Database test failed: ${error.message}`);
                                     }

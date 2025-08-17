@@ -6,7 +6,6 @@ import { fadeInUp, staggerContainer } from '../../utils/motion';
 import {
     TrashIcon,
     ExclamationTriangleIcon,
-    ChartBarIcon,
     ClockIcon,
     FolderIcon,
     DocumentTextIcon,

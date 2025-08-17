@@ -73,44 +73,6 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
     };
 
 
-    const getProjectProgress = (project: ProjectRow) => {
-        // Map 9 status values to 6 journey steps (16.67% each)
-        // Exactly matching the 6 journey steps from DashboardGuide
-
-        switch (project.status) {
-            // Step 1: Project Submission (16.67%)
-            case 'new':
-            case 'submitted':
-                return 16.67;
-
-            // Step 2: Project Confirmation (33.33%)
-            case 'waiting_for_confirmation':
-                return 33.33;
-
-            // Step 3: Payment Confirmed (50%)
-            case 'confirmed':
-                return 50;
-
-            // Step 4: Design & Development (66.67%) - After initial payment
-            case 'in_progress':
-            case 'in_design':
-                return 66.67;
-
-            // Step 5: Review & Feedback (83.33%)
-            case 'review':
-            case 'final_delivery':
-                return 83.33;
-
-            // Step 6: Website Launch (100%) - After final payment
-            case 'completed':
-                return 100;
-
-            default:
-                return 0;
-        }
-    };
-
-
 
     // File upload handling
     const handleFileUpload = useCallback(async (files: FileList, category: string, projectId: string) => {
@@ -252,7 +214,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                                     <div>
                                         <p className="text-sm font-medium text-green-900">{file.name}</p>
                                         <p className="text-xs text-green-600">
-                                            {formatFileSize(file.size)} • {new Date(file.created_at || file.uploadedAt).toLocaleDateString()}
+                                            {formatFileSize(file.size)} • {new Date(file.created_at).toLocaleDateString()}
                                         </p>
                                     </div>
                                 </div>
