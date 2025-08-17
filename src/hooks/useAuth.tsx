@@ -130,23 +130,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(true);
         try {
             console.log('Attempting admin sign in...');
-            const result = await AuthService.adminSignIn(data);
-            console.log('Admin sign in successful:', result);
-
-            // Get the admin profile immediately
-            const profile = await AuthService.getCurrentUserProfile();
-            console.log('Admin profile loaded:', profile);
-
-            if (profile && profile.role === 'admin') {
-                setUser(profile);
-                setLoading(false);
-            } else {
-                setLoading(false);
-                throw new Error('Admin profile not found or invalid role');
-            }
+            await AuthService.adminSignIn(data);
+            // The onAuthStateChange listener will handle setting the user and profile
+            // No need to manually set user here, which can cause race conditions
         } catch (error) {
             console.error('Admin sign in error:', error);
-            setLoading(false);
+            setLoading(false); // Ensure loading is stopped on error
             throw error;
         }
     };
