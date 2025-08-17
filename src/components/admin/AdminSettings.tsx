@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
-import { LoadingSpinner } from '../common/LoadingSpinner';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import {
@@ -11,8 +10,6 @@ import {
     BellIcon,
     CogIcon,
     ShieldCheckIcon,
-    EnvelopeIcon,
-    ClockIcon,
     DocumentTextIcon,
     ExclamationTriangleIcon,
     CheckCircleIcon,

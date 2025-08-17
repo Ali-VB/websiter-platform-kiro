@@ -230,9 +230,10 @@ export class ClientNotesService {
                     table: 'client_notes'
                 },
                 (payload) => {
+                    console.log('Real-time payload received:', payload);
                     // Filter on the client side to avoid complex filter syntax
                     const record = payload.new || payload.old;
-                    if (record && (record.client_id === clientId || record.client_email === clientEmail)) {
+                    if (record && (('client_id' in record && record.client_id === clientId) || ('client_email' in record && record.client_email === clientEmail))) {
                         callback(payload);
                     }
                 }

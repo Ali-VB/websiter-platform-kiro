@@ -26,13 +26,18 @@ interface DatabaseStats {
     missingClientRecords: any[];
     relationships: {
         clientProjects: Array<{
+            clientId: string;
             clientName: string;
             clientEmail: string;
+            clientRole: string;
+            clientCreated: string;
             projectCount: number;
             projects: any[];
         }>;
         paymentSummary: Array<{
+            clientId: string;
             clientName: string;
+            clientEmail: string;
             totalAmount: number;
             paymentCount: number;
             succeededCount: number;
@@ -465,7 +470,7 @@ export const DatabaseOverview: React.FC = React.memo(() => {
                                 toast.success(`Found: ${customUserCount} custom users, ${authUserCount} auth users, ${projectTest.data?.length || 0} projects, ${paymentTest.data?.length || 0} payments`);
 
                                 // Show in alert for immediate visibility
-                                const authStatus = authUserTest.error ? 'ERROR: ' + authUserTest.error.message : 'OK';
+                                const authStatus = authUserTest.error ? 'ERROR: ' + (authUserTest.error as any).message : 'OK';
                                 alert(`Database Test Results:
 Custom Users (users table): ${customUserCount} (${customUserTest.error ? 'ERROR: ' + customUserTest.error.message : 'OK'})
 Auth Users (Supabase Auth): ${authUserCount} (${authStatus})
@@ -1022,7 +1027,7 @@ Check console for detailed data.`);
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-2 text-sm font-medium text-green-600">
-                                                    {project.price ? formatCurrency(project.price * 100) : 'No price'}
+                                                    {project.price ? formatCurrency(Number(project.price) * 100) : 'No price'}
                                                 </td>
                                                 <td className="px-4 py-2 text-sm text-gray-600">
                                                     {project.created_at ? new Date(project.created_at).toLocaleDateString() : 'Unknown'}
@@ -1060,7 +1065,7 @@ Check console for detailed data.`);
                                 ).map(([role, count]) => (
                                     <div key={role} className="flex justify-between">
                                         <span className="capitalize">{role}:</span>
-                                        <span className="font-medium">{count}</span>
+                                        <span className="font-medium">{count as any}</span>
                                     </div>
                                 ))}
                             </div>
@@ -1077,7 +1082,7 @@ Check console for detailed data.`);
                                 ).map(([status, count]) => (
                                     <div key={status} className="flex justify-between">
                                         <span className="capitalize">{status}:</span>
-                                        <span className="font-medium">{count}</span>
+                                        <span className="font-medium">{count as any}</span>
                                     </div>
                                 ))}
                             </div>
@@ -1094,9 +1099,9 @@ Check console for detailed data.`);
                                 ).map(([status, count]) => (
                                     <div key={status} className="flex justify-between">
                                         <span className="capitalize">{status}:</span>
-                                        <span className="font-medium">{count}</span>
+                                        <span className="font-medium">{count as any}</span>
                                     </div>
-                                ))}
+                                 ))}
                             </div>
                         </div>
                     </div>

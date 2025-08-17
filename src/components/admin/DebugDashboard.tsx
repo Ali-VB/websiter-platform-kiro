@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
@@ -50,7 +50,7 @@ export const DebugDashboard: React.FC = () => {
     // Database Health Checks
     const testDatabaseConnection = async () => {
         try {
-            const { data, error } = await supabase.from('users').select('count').limit(1);
+            const { error } = await supabase.from('users').select('count').limit(1);
             if (error) throw error;
 
             addResult({
@@ -75,7 +75,7 @@ export const DebugDashboard: React.FC = () => {
 
         for (const table of tables) {
             try {
-                const { data, error } = await supabase.from(table).select('count').limit(1);
+                const { error } = await supabase.from(table).select('count').limit(1);
                 if (error) throw error;
 
                 addResult({
@@ -315,7 +315,7 @@ export const DebugDashboard: React.FC = () => {
 
             for (const table of tables) {
                 try {
-                    const { data, error, count } = await supabase
+                    const { error, count } = await supabase
                         .from(table)
                         .select('*', { count: 'exact', head: true });
 

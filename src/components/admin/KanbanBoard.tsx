@@ -82,7 +82,7 @@ const KANBAN_COLUMNS = [
 // Helper function to map database status to Kanban column
 const getKanbanColumnForStatus = (dbStatus: string): string => {
     for (const column of KANBAN_COLUMNS) {
-        if (column.dbStatuses.includes(dbStatus)) {
+        if ((column.dbStatuses as readonly string[]).includes(dbStatus)) {
             return column.id;
         }
     }
@@ -117,7 +117,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     const handleStatusChange = async (projectId: string, newStatus: string) => {
         // Validate status value against database schema
         const validStatuses = Object.values(DB_STATUS_VALUES);
-        if (!validStatuses.includes(newStatus)) {
+        if (!(validStatuses as string[]).includes(newStatus)) {
             console.error('❌ Invalid status value:', newStatus);
             console.error('Valid statuses are:', validStatuses);
             alert(`Invalid status value: ${newStatus}. Valid statuses are: ${validStatuses.join(', ')}`);
@@ -325,6 +325,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             {/* Project View Modal */}
             {selectedProject && (
                 <ProjectViewModal
+                    isOpen={!!selectedProject}
                     project={selectedProject}
                     onClose={() => setSelectedProject(null)}
                 />

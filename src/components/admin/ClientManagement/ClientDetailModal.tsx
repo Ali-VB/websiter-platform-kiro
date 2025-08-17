@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../../common/Modal';
 import { Button } from '../../common/Button';
 import { Card } from '../../common/Card';
 import { Badge } from '../../common/Badge';
 import { LoadingSpinner } from '../../common/LoadingSpinner';
-import { ProjectService } from '../../../services/supabase/projects';
-import { ClientNotesService, type ClientNote } from '../../../services/supabase/clientNotes';
 import { useClientNotes } from '../../../hooks/useClientNotes';
 import type { Project } from '../../../types';
 import {

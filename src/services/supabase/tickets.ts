@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase';
-import { StorageService, type FileUploadResult } from './storage';
+import { StorageService } from './storage';
 import { AdminNotificationService } from './adminNotifications';
 import type { Database } from '../../types/database';
 

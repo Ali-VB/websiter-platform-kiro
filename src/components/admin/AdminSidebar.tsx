@@ -25,7 +25,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     // const { requests } = useWebsiteRequests();
 
     // Get unique client count
-    const uniqueClients = new Set(projects.map(p => p.clientId || p.clientEmail)).size;
+    const uniqueClients = new Set(projects.map(p => p.client_id)).size;
 
     // Get total assets count - we'll use a state for this since it's async
     const [totalAssets, setTotalAssets] = React.useState(0);

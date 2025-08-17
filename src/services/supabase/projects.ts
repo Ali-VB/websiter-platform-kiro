@@ -485,7 +485,7 @@ export const updateProjectStatus = async (
     if (currentProject && currentProject.users) {
       AdminNotificationService.notifyProjectStatusChange({
         projectId,
-        clientName: currentProject.users.name || 'Unknown Client',
+        clientName: (currentProject.users as any).name || 'Unknown Client',
         projectTitle: currentProject.title,
         oldStatus: currentProject.status,
         newStatus: status

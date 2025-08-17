@@ -87,9 +87,9 @@ export function useClientNotes(clientId: string, clientEmail: string) {
     };
 
     const deleteNote = async (noteId: string): Promise<void> => {
+        const noteToDelete = notes.find(n => n.id === noteId);
         try {
             // Store the note for potential rollback
-            const noteToDelete = notes.find(n => n.id === noteId);
             
             // Optimistically remove from local state
             setNotes(prevNotes => prevNotes.filter(n => n.id !== noteId));
@@ -100,7 +100,7 @@ export function useClientNotes(clientId: string, clientEmail: string) {
             // Revert optimistic update on error
             if (noteToDelete) {
                 setNotes(prevNotes => [...prevNotes, noteToDelete].sort((a, b) => 
-                    b.createdAt.getTime() - a.createdAt.getTime()
+                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
                 ));
             }
             throw error;
@@ -109,16 +109,16 @@ export function useClientNotes(clientId: string, clientEmail: string) {
 
     const updateNote = async (noteId: string, text: string): Promise<void> => {
         if (!text.trim()) return;
+        const originalNote = notes.find(n => n.id === noteId);
         
         try {
             // Store original text for potential rollback
-            const originalNote = notes.find(n => n.id === noteId);
             
             // Optimistically update local state
             setNotes(prevNotes => 
                 prevNotes.map(n => 
                     n.id === noteId 
-                        ? { ...n, text: text.trim(), updatedAt: new Date() }
+                        ? { ...n, text: text.trim(), updated_at: new Date().toISOString() }
                         : n
                 )
             );

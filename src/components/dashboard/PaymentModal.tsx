@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Modal } from '../common';
 import { PaymentForm } from '../payment/PaymentForm';
-import { updateProjectStatus } from '../../services/supabase/projects';
-import { supabase } from '../../lib/supabase';
 import { updateProjectStatusBasedOnPayments } from '../../utils/paymentHelpers';
 import { fadeInUp, staggerContainer } from '../../utils/motion';
 import type { Database } from '../../types/database';

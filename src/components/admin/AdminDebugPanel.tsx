@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Button } from '../common';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 export const AdminDebugPanel: React.FC = () => {
