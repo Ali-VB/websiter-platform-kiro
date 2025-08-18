@@ -133,3 +133,5 @@ docs/**/*.temp
 # Database (keep migrations but ignore temp files)
 database/**/*.tmp
 database/**/*.temp
+
+/test-results/
