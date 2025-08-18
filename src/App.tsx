@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { LandingPage } from './components/LandingPage';
+import NewLandingPage from './components/NewLandingPage';
 import { OnboardingFlow } from './components/onboarding';
 import { ClientDashboard } from './components/dashboard';
 import { AdminDashboard } from './components/admin';
 import { AdminLogin } from './components/admin/AdminLogin';
+import { AuthModal } from './components/auth/AuthModal';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useUserSync } from './hooks/useUserSync';
 import { ProjectService } from './services/supabase/projects';
@@ -44,6 +45,7 @@ function App() {
 
 function AppContent() {
   const [currentView, setCurrentView] = useState<'landing' | 'onboarding' | 'dashboard' | 'admin' | 'admin-login'>('landing');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   // useWebsiteRequests removed - using simple approach
   const { user } = useAuth();
 
@@ -170,7 +172,23 @@ function AppContent() {
     );
   }
 
-  return <LandingPage onStartProject={handleStartProject} />;
+  return (
+    <>
+      <NewLandingPage
+        onStartProject={handleStartProject}
+        onSignInClick={() => setIsAuthModalOpen(true)} // Pass function to open modal
+      />
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={() => {
+          // Handle successful login, e.g., redirect to dashboard
+          setCurrentView('dashboard');
+          setIsAuthModalOpen(false);
+        }}
+      />
+    </>
+  );
 }
 
 export default App

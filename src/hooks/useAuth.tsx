@@ -9,6 +9,7 @@ interface AuthContextType {
     signUp: (data: { email: string; password: string; name: string }) => Promise<void>;
     signIn: (data: { email: string; password: string }) => Promise<void>;
     adminSignIn: (data: { email: string; password: string }) => Promise<void>;
+    signInWithGoogle: () => Promise<void>;
 
     signOut: () => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
@@ -149,6 +150,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.error('Sign out error:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const signInWithGoogle = async () => {
+        setLoading(true);
+        try {
+            await AuthService.signInWithGoogle();
+        } catch (error) {
+            setLoading(false);
+            throw error;
         }
     };
 
