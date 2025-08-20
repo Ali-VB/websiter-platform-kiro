@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
-//import { useWebsiteRequests } from '../../hooks/useWebsiteRequests';
 import { useProjects } from '../../hooks/useProjects';
 import { Button } from '../common';
+import { LayoutDashboard, List, CreditCard, LifeBuoy, Settings, Home, LogOut } from 'lucide-react';
 
 type DashboardView = 'overview' | 'projects' | 'payments' | 'support' | 'settings';
 
@@ -21,42 +21,41 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     onToggleCollapse,
 }) => {
     const { user, signOut } = useAuth();
-    //const { requests } = useWebsiteRequests();
     const { projects } = useProjects();
 
     const navigationItems = [
         {
             id: 'overview' as const,
             label: 'Overview',
-            icon: '📊',
+            icon: <LayoutDashboard className="w-6 h-6" />,
             description: 'Dashboard summary',
             badge: null,
         },
         {
             id: 'projects' as const,
             label: 'Projects',
-            icon: '🚀',
+            icon: <List className="w-6 h-6" />,
             description: 'Active projects',
             badge: projects.filter(p => p.status !== 'completed').length || null,
         },
         {
             id: 'payments' as const,
             label: 'Payments',
-            icon: '💳',
+            icon: <CreditCard className="w-6 h-6" />,
             description: 'Billing & invoices',
             badge: null,
         },
         {
             id: 'support' as const,
             label: 'Support',
-            icon: '🎧',
+            icon: <LifeBuoy className="w-6 h-6" />,
             description: 'Get help',
             badge: null,
         },
         {
             id: 'settings' as const,
             label: 'Settings',
-            icon: '⚙️',
+            icon: <Settings className="w-6 h-6" />,
             description: 'Account settings',
             badge: null,
         },
@@ -168,17 +167,17 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                                 size="sm"
                                 variant="outline"
                                 onClick={() => window.location.href = '/'}
-                                className="flex-1 text-xs hover:scale-105 transition-transform"
+                                className="flex-1 text-xs hover:scale-105 transition-transform flex items-center justify-center"
                             >
-                                🏠 Home
+                                <Home className="w-4 h-4 mr-2" /> Home
                             </Button>
                             <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={handleSignOut}
-                                className="flex-1 text-xs text-error-600 hover:text-error-700 hover:bg-error-50 hover:scale-105 transition-all"
+                                className="flex-1 text-xs text-error-600 hover:text-error-700 hover:bg-error-50 hover:scale-105 transition-all flex items-center justify-center"
                             >
-                                🚪 Exit
+                                <LogOut className="w-4 h-4 mr-2" /> Exit
                             </Button>
                         </div>
                     </motion.div>
@@ -189,14 +188,14 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                             className="w-full p-3 rounded-xl hover:bg-neutral-100 hover:scale-110 transition-all duration-300 group"
                             title="Home"
                         >
-                            <span className="text-neutral-600 text-xl group-hover:text-neutral-800">🏠</span>
+                            <Home className="w-6 h-6 text-neutral-600 group-hover:text-neutral-800" />
                         </button>
                         <button
                             onClick={handleSignOut}
                             className="w-full p-3 rounded-xl hover:bg-error-50 hover:scale-110 transition-all duration-300 group"
                             title="Sign Out"
                         >
-                            <span className="text-error-600 text-xl group-hover:text-error-700">🚪</span>
+                            <LogOut className="w-6 h-6 text-error-600 group-hover:text-error-700" />
                         </button>
                     </div>
                 )}

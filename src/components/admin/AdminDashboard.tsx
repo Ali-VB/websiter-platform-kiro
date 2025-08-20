@@ -18,6 +18,7 @@ import { StorageManagement } from './StorageManagement';
 import { NotificationTest } from '../debug/NotificationTest';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { NotificationPanel } from './NotificationPanel';
+import { ContactSubmissions } from './ContactSubmissions';
 
 import { UserSyncService } from '../../services/supabase/userSync';
 
@@ -26,11 +27,22 @@ import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 
 import {
-    FunnelIcon
-} from '@heroicons/react/24/outline';
+    LayoutDashboard,
+    List,
+    Users,
+    LifeBuoy,
+    CreditCard,
+    Folder,
+    Database,
+    Settings,
+    Bug,
+    Bell,
+    Filter,
+    Mail
+} from 'lucide-react';
 import { fadeInUp } from '../../utils/motion';
 
-type AdminView = 'kanban' | 'projects' | 'clients' | 'support' | 'payments' | 'assets' | 'storage' | 'settings' | 'debug' | 'database' | 'notifications';
+type AdminView = 'kanban' | 'projects' | 'clients' | 'support' | 'payments' | 'assets' | 'storage' | 'settings' | 'debug' | 'database' | 'notifications' | 'contact';
 
 interface AdminDashboardProps {
     className?: string;
@@ -190,6 +202,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                 return <ProjectAssets projects={projects} />;
             case 'storage':
                 return <StorageManagement projects={projects} />;
+            case 'contact':
+                return <ContactSubmissions />;
             case 'settings':
                 return <AdminSettings />;
             case 'debug':
@@ -218,29 +232,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
     const getViewTitle = () => {
         switch (activeView) {
             case 'kanban':
-                return '📋 Kanban Board';
+                return <div className="flex items-center"><LayoutDashboard className="w-6 h-6 mr-2" /> Kanban Board</div>;
             case 'projects':
-                return '🚀 Project Management';
+                return <div className="flex items-center"><List className="w-6 h-6 mr-2" /> Project Management</div>;
             case 'clients':
-                return '👥 Client Management';
+                return <div className="flex items-center"><Users className="w-6 h-6 mr-2" /> Client Management</div>;
             case 'support':
-                return '🎧 Support Tickets';
+                return <div className="flex items-center"><LifeBuoy className="w-6 h-6 mr-2" /> Support Tickets</div>;
             case 'payments':
-                return '💳 Payment Management';
+                return <div className="flex items-center"><CreditCard className="w-6 h-6 mr-2" /> Payment Management</div>;
             case 'assets':
-                return '📁 Project Assets';
+                return <div className="flex items-center"><Folder className="w-6 h-6 mr-2" /> Project Assets</div>;
             case 'storage':
-                return '🗄️ Storage Management';
+                return <div className="flex items-center"><Database className="w-6 h-6 mr-2" /> Storage Management</div>;
+            case 'contact':
+                return <div className="flex items-center"><Mail className="w-6 h-6 mr-2" /> Contact Submissions</div>;
             case 'settings':
-                return '⚙️ Admin Settings';
+                return <div className="flex items-center"><Settings className="w-6 h-6 mr-2" /> Admin Settings</div>;
             case 'debug':
-                return '🔍 Debug Tools';
+                return <div className="flex items-center"><Bug className="w-6 h-6 mr-2" /> Debug Tools</div>;
             case 'database':
-                return '📊 Database Overview';
+                return <div className="flex items-center"><Database className="w-6 h-6 mr-2" /> Database Overview</div>;
             case 'notifications':
-                return '🔔 Notifications';
+                return <div className="flex items-center"><Bell className="w-6 h-6 mr-2" /> Notifications</div>;
             default:
-                return '📋 Kanban Board';
+                return <div className="flex items-center"><LayoutDashboard className="w-6 h-6 mr-2" /> Kanban Board</div>;
         }
     };
 
@@ -260,6 +276,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                 return 'View and manage all client-uploaded project assets';
             case 'storage':
                 return 'Monitor storage usage and cleanup assets to optimize space';
+            case 'contact':
+                return 'View and manage contact form submissions';
             case 'settings':
                 return 'Configure admin panel settings';
             case 'debug':
@@ -289,7 +307,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                 <div className="bg-white border-b border-gray-200 px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">
+                            <h1 className="text-2xl font-bold text-gray-900 flex items-center">
                                 {getViewTitle()}
                             </h1>
                             <p className="text-gray-600 text-sm">
@@ -306,7 +324,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }
                                     onClick={() => setShowFilters(!showFilters)}
                                     className="flex items-center space-x-2"
                                 >
-                                    <FunnelIcon className="w-4 h-4" />
+                                    <Filter className="w-4 h-4" />
                                     <span>Filters</span>
                                 </Button>
                             )}

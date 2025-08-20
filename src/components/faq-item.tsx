@@ -11,9 +11,9 @@ export function FAQItem({ question, answer }: FAQItemProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="border-b border-gray-200">
+    <div className={`border-b border-gray-200 rounded-lg transition-colors duration-200 ${isOpen ? 'bg-pink-50' : 'hover:bg-gray-50'}`}>
       <button
-        className="w-full py-6 px-0 flex items-center justify-between text-left hover:bg-gray-50 transition-colors duration-200"
+        className="w-full py-6 px-6 flex items-center justify-between text-left"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="text-lg font-medium text-gray-900 pr-8">{question}</span>
@@ -29,7 +29,7 @@ export function FAQItem({ question, answer }: FAQItemProps) {
         </svg>
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-96 pb-6" : "max-h-0"}`}
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-96 px-6 pb-6" : "max-h-0"}`}
       >
         <p className="text-gray-600 leading-relaxed pr-8">{answer}</p>
       </div>

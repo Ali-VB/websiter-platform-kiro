@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '../common';
 import { LoginForm } from './LoginForm';
 import { SignUpForm } from './SignUpForm';
@@ -27,30 +26,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         onClose();
     };
 
-    const slideVariants = {
-        enter: (direction: number) => ({
-            x: direction > 0 ? 300 : -300,
-            opacity: 0,
-        }),
-        center: {
-            zIndex: 1,
-            x: 0,
-            opacity: 1,
-        },
-        exit: (direction: number) => ({
-            zIndex: 0,
-            x: direction < 0 ? 300 : -300,
-            opacity: 0,
-        }),
-    };
-
-    const [direction, setDirection] = useState(0);
-
     const switchView = (view: AuthView) => {
-        const viewOrder: AuthView[] = ['login', 'signup', 'reset'];
-        const currentIndex = viewOrder.indexOf(currentView);
-        const newIndex = viewOrder.indexOf(view);
-        setDirection(newIndex > currentIndex ? 1 : -1);
         setCurrentView(view);
     };
 
@@ -83,25 +59,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         }
     };
 
+    const getTitle = () => {
+        switch (currentView) {
+            case 'login':
+                return 'Sign In';
+            case 'signup':
+                return 'Sign Up';
+            case 'reset':
+                return 'Reset Password';
+        }
+    }
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="md">
-            <div className="relative overflow-hidden">
-                <AnimatePresence mode="wait" custom={direction}>
-                    <motion.div
-                        key={currentView}
-                        custom={direction}
-                        variants={slideVariants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{
-                            x: { type: "spring", stiffness: 300, damping: 30 },
-                            opacity: { duration: 0.2 },
-                        }}
-                    >
-                        {renderCurrentView()}
-                    </motion.div>
-                </AnimatePresence>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">{getTitle()}</h2>
+                <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div>
+                {renderCurrentView()}
             </div>
         </Modal>
     );

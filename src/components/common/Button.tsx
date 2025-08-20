@@ -14,11 +14,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantClasses = {
-    primary: 'bg-neutral-900 text-neutral-0 hover:bg-neutral-800 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 shadow-minimal hover:shadow-soft transition-all duration-200',
+    primary: 'bg-neutral-900 text-neutral-50 hover:bg-neutral-800 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 shadow-minimal hover:shadow-soft transition-all duration-200',
     secondary: 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 shadow-minimal hover:shadow-soft transition-all duration-200',
     outline: 'border border-neutral-300 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-400 focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-all duration-200',
     ghost: 'text-neutral-700 hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-all duration-200',
-    danger: 'bg-error-600 text-neutral-0 hover:bg-error-700 focus:ring-2 focus:ring-error-500 focus:ring-offset-2 shadow-minimal hover:shadow-soft transition-all duration-200',
+    danger: 'bg-error-600 text-neutral-50 hover:bg-error-700 focus:ring-2 focus:ring-error-500 focus:ring-offset-2 shadow-minimal hover:shadow-soft transition-all duration-200',
 };
 
 const sizeClasses = {

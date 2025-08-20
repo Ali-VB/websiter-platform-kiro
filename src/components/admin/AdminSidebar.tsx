@@ -4,8 +4,9 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAllProjects } from '../../hooks/useProjects';
 import { SupabaseProjectAssetsService } from '../../services/supabase/projectAssets';
 import { Button } from '../common';
+import { LayoutDashboard, List, Users, LifeBuoy, CreditCard, Folder, Database, Settings, Bug, Bell, Home, LogOut, Mail } from 'lucide-react';
 
-type AdminView = 'kanban' | 'projects' | 'clients' | 'support' | 'payments' | 'assets' | 'storage' | 'settings' | 'debug' | 'database' | 'notifications';
+type AdminView = 'kanban' | 'projects' | 'clients' | 'support' | 'payments' | 'assets' | 'storage' | 'settings' | 'debug' | 'database' | 'notifications' | 'contact';
 
 interface AdminSidebarProps {
     activeView: AdminView;
@@ -46,77 +47,84 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         {
             id: 'kanban' as const,
             label: 'Kanban Board',
-            icon: '📋',
+            icon: <LayoutDashboard className="w-6 h-6" />,
             description: 'Project management',
             badge: null,
         },
         {
             id: 'projects' as const,
             label: 'Project Management',
-            icon: '🚀',
+            icon: <List className="w-6 h-6" />,
             description: 'Manage all projects & quotes',
             badge: projects.filter(p => p.status !== 'completed').length || null,
         },
         {
             id: 'clients' as const,
             label: 'Clients',
-            icon: '👥',
+            icon: <Users className="w-6 h-6" />,
             description: 'Client management',
             badge: uniqueClients || null,
         },
         {
             id: 'support' as const,
             label: 'Support Tickets',
-            icon: '🎧',
+            icon: <LifeBuoy className="w-6 h-6" />,
             description: 'Manage support tickets',
             badge: null, // TODO: Add open tickets count
         },
         {
             id: 'payments' as const,
             label: 'Payments',
-            icon: '💳',
+            icon: <CreditCard className="w-6 h-6" />,
             description: 'Payment management',
             badge: null, // TODO: Add pending payments count
         },
         {
             id: 'assets' as const,
             label: 'Project Assets',
-            icon: '📁',
+            icon: <Folder className="w-6 h-6" />,
             description: 'Client uploaded files',
             badge: totalAssets || null,
         },
         {
             id: 'storage' as const,
             label: 'Storage Management',
-            icon: '🗄️',
+            icon: <Database className="w-6 h-6" />,
             description: 'Cleanup & optimize storage',
+            badge: null,
+        },
+        {
+            id: 'contact' as const,
+            label: 'Contact Submissions',
+            icon: <Mail className="w-6 h-6" />,
+            description: 'View contact form submissions',
             badge: null,
         },
         {
             id: 'settings' as const,
             label: 'Settings',
-            icon: '⚙️',
+            icon: <Settings className="w-6 h-6" />,
             description: 'Admin settings',
             badge: null,
         },
         {
             id: 'database' as const,
             label: 'Database Overview',
-            icon: '📊',
+            icon: <Database className="w-6 h-6" />,
             description: 'Database statistics',
             badge: null,
         },
         {
             id: 'notifications' as const,
             label: 'Notifications',
-            icon: '🔔',
+            icon: <Bell className="w-6 h-6" />,
             description: 'Manage notifications',
             badge: null,
         },
         {
             id: 'debug' as const,
             label: 'Debug',
-            icon: '🔍',
+            icon: <Bug className="w-6 h-6" />,
             description: 'Debug tools',
             badge: null,
         },
@@ -176,7 +184,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                 }`}
                         >
-                            <span className="text-xl flex-shrink-0">{item.icon}</span>
+                            <span className="flex-shrink-0">{item.icon}</span>
                             {!isCollapsed && (
                                 <div className="flex-1 min-w-0">
                                     <div className="font-medium text-sm">{item.label}</div>
@@ -222,17 +230,17 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                                 size="sm"
                                 variant="outline"
                                 onClick={() => window.location.href = '/'}
-                                className="flex-1 text-xs"
+                                className="flex-1 text-xs flex items-center justify-center"
                             >
-                                Home
+                                <Home className="w-4 h-4 mr-2" /> Home
                             </Button>
                             <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={handleSignOut}
-                                className="flex-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="flex-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 flex items-center justify-center"
                             >
-                                Sign Out
+                                <LogOut className="w-4 h-4 mr-2" /> Sign Out
                             </Button>
                         </div>
                     </div>
@@ -243,14 +251,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                             className="w-full p-2 rounded-lg hover:bg-gray-100 transition-colors"
                             title="Home"
                         >
-                            <span className="text-gray-600">🏠</span>
+                            <Home className="w-6 h-6 text-gray-600" />
                         </button>
                         <button
                             onClick={handleSignOut}
                             className="w-full p-2 rounded-lg hover:bg-red-50 transition-colors"
                             title="Sign Out"
                         >
-                            <span className="text-red-600">🚪</span>
+                            <LogOut className="w-6 h-6 text-red-600" />
                         </button>
                     </div>
                 )}

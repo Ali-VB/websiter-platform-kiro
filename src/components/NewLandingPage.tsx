@@ -2,8 +2,11 @@ import { Button } from "./ui/button";
 import { FAQItem } from "./faq-item";
 import koalaIllustration from "../assets/koala-illustration.png";
 import actionBackground from "../assets/footer-trees.png";
+import { useState } from "react";
+import ContactUsModal from "./ContactUsModal";
 
 export default function WebsiterLanding({ onStartProject, onSignInClick }: { onStartProject: () => void; onSignInClick: () => void }) {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const handleHowItWorksClick = () => {
     const element = document.getElementById('how-it-works');
     if (element) {
@@ -14,15 +17,15 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Hero Section */}
-      <section className="relative overflow-hidden min-h-screen">
+      <section className="relative overflow-hidden flex items-center justify-center min-h-screen">
         <div className="container mx-auto px-4 py-8">
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
             <div className="grid lg:grid-cols-2 gap-0 items-center min-h-[80vh]">
               {/* Left side - Content */}
               <div className="space-y-8 p-12 lg:p-16 leading-4">
                 {/* Navigation */}
-                <nav className="flex items-center justify-between mb-12 text-left">
-                  <div className="flex items-center space-x-3">
+                <nav className="flex flex-col sm:flex-row items-center justify-between mb-12 text-left">
+                  <div className="flex items-center space-x-3 mb-4 sm:mb-0">
                     <span className="font-semibold font-sans text-2xl text-pink-600">websiter.click</span>
                   </div>
                   <Button
@@ -36,10 +39,10 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
 
                 <div className="space-y-8">
                   {/* Hero Content */}
-                  <div className="space-y-4">
+                  <div>
                     <h1 className="font-light text-gray-900 leading-tight tracking-wide text-6xl">Your Website,</h1>
-                    <h2 className="text-4xl text-gray-900 leading-tight font-extrabold lg:text-6xl">Simplified</h2>
-                    <p className="leading-relaxed max-w-lg text-lg text-slate-800">
+                    <h2 className="text-4xl text-gray-900 leading-tight font-extrabold lg:text-6xl -mt-2">Simplified</h2>
+                    <p className="leading-relaxed max-w-lg text-lg text-slate-800 pt-4">
                       Order your professional website like you'd order anything online – simple, transparent, and
                       entirely on your terms.
                     </p>
@@ -426,18 +429,31 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
       >
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-black mb-8 leading-7 text-4xl font-medium">Ready to Place Your Website Order?</h2>
-            <Button
-              size="lg"
-              className="bg-black hover:bg-gray-800 text-white font-medium px-12 py-6 text-xl rounded-full"
-              onClick={onStartProject}
-            >
-              start your order
-            </Button>
+            <div className="mb-8">
+              <h2 className="text-black leading-7 text-4xl font-medium mb-4">Ready to Place Your</h2>
+              <h2 className="text-black leading-7 text-4xl font-medium">Website Order?</h2>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center sm:space-x-4 space-y-4 sm:space-y-0">
+              <Button
+                size="lg"
+                className="bg-black hover:bg-gray-800 text-white font-medium px-12 py-6 text-xl rounded-full"
+                onClick={onStartProject}
+              >
+                start your order
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-black text-black hover:bg-gray-200 font-medium px-12 py-6 text-xl rounded-full bg-transparent"
+                onClick={() => setIsContactModalOpen(true)}
+              >
+                Contact Us
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="py-12 text-center">
+        <div className="py-12 text-center pb-24">
           <p className="text-black text-sm mb-6">© 2025 Websiter.click. All rights reserved.</p>
           <div className="flex justify-center space-x-6">
             <a href="#" className="text-black hover:text-gray-700 transition-colors">
@@ -465,6 +481,7 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
           </div>
         </div>
       </section>
+      {isContactModalOpen && <ContactUsModal onClose={() => setIsContactModalOpen(false)} />}
     </div>
   );
 }
