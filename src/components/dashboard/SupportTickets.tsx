@@ -20,11 +20,21 @@ export const SupportTickets: React.FC = () => {
     const [responseMessage, setResponseMessage] = useState('');
     const [sendingResponse, setSendingResponse] = useState(false);
 
-    // Load tickets on component mount
+    // Load tickets on component mount and when tab becomes visible
     useEffect(() => {
         if (user) {
             loadTickets();
         }
+
+        const handleTabVisible = () => {
+            console.log('SupportTickets visible, refreshing data...');
+            if (user) {
+                loadTickets();
+            }
+        };
+
+        window.addEventListener('tab-visible', handleTabVisible);
+        return () => window.removeEventListener('tab-visible', handleTabVisible);
     }, [user]);
 
     const loadTickets = async () => {

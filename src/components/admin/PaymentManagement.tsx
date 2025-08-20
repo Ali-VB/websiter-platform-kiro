@@ -43,6 +43,14 @@ export const PaymentManagement: React.FC = () => {
 
     useEffect(() => {
         loadPayments();
+
+        const handleTabVisible = () => {
+            console.log('PaymentManagement visible, refreshing data...');
+            loadPayments();
+        };
+
+        window.addEventListener('tab-visible', handleTabVisible);
+        return () => window.removeEventListener('tab-visible', handleTabVisible);
     }, []);
 
     const loadPayments = async () => {

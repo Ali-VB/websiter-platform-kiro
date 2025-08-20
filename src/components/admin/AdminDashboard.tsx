@@ -26,6 +26,7 @@ import { LoadingSpinner } from '../common/LoadingSpinner';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 
+import { useTabVisibility } from '../../hooks/useTabVisibility';
 import {
     LayoutDashboard,
     List,
@@ -49,6 +50,7 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ className = '' }) => {
+    useTabVisibility(); // Ensures that the tab visibility event is dispatched
     const { user } = useAuth();
     const { projects: rawProjects, loading, error } = useAllProjects();
     const [activeView, setActiveView] = useState<AdminView>('kanban');

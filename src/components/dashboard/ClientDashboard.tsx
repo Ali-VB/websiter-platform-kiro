@@ -12,6 +12,7 @@ import { SupportTickets } from './SupportTickets';
 import { PaymentHistory } from './PaymentHistory';
 import { DashboardSettings } from './DashboardSettings';
 import { NotificationBell } from '../notifications/NotificationBell';
+import { useTabVisibility } from '../../hooks/useTabVisibility';
 import { fadeInUp } from '../../utils/motion';
 
 type DashboardView = 'overview' | 'projects' | 'payments' | 'support' | 'settings';
@@ -27,6 +28,8 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onStartProject
     const [activeView, setActiveView] = useState<DashboardView>('overview');
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
+    // Ensure tab visibility events are dispatched
+    useTabVisibility();
 
     // Handle responsive sidebar
     useEffect(() => {
@@ -39,23 +42,6 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onStartProject
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // Handle tab visibility changes - refresh when tab becomes visible after being hidden
-    useEffect(() => {
-        let wasHidden = false;
-
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                wasHidden = true;
-            } else if (wasHidden) {
-                console.log('🔄 Tab became visible after being hidden - refreshing');
-                setTimeout(() => window.location.reload(), 100);
-            }
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, []);
 
 

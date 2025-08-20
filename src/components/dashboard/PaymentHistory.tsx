@@ -34,6 +34,14 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ projects }) => {
 
     useEffect(() => {
         loadPayments();
+
+        const handleTabVisible = () => {
+            console.log('PaymentHistory visible, refreshing data...');
+            loadPayments();
+        };
+
+        window.addEventListener('tab-visible', handleTabVisible);
+        return () => window.removeEventListener('tab-visible', handleTabVisible);
     }, [user]);
 
     const loadPayments = async () => {

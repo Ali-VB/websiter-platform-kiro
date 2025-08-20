@@ -26,6 +26,14 @@ export const ProjectAssets: React.FC<ProjectAssetsProps> = ({ projects }) => {
 
     useEffect(() => {
         loadAllAssets();
+
+        const handleTabVisible = () => {
+            console.log('ProjectAssets visible, refreshing data...');
+            loadAllAssets();
+        };
+
+        window.addEventListener('tab-visible', handleTabVisible);
+        return () => window.removeEventListener('tab-visible', handleTabVisible);
     }, []);
 
     const loadAllAssets = async () => {

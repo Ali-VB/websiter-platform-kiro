@@ -46,21 +46,31 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 
     const activeProject = projects.find(p => p.id === activeProjectId);
 
-    // Load assets on component mount and when projects change
-    useEffect(() => {
-        const loadAssets = async () => {
-            const assetsMap: Record<string, ProjectAsset[]> = {};
-            for (const project of projects) {
-                const assets = await SupabaseProjectAssetsService.getProjectAssets(project.id);
-                assetsMap[project.id] = assets;
-            }
-            setUploadedFiles(assetsMap);
-        };
+    const loadAssets = useCallback(async () => {
+        const assetsMap: Record<string, ProjectAsset[]> = {};
+        for (const project of projects) {
+            const assets = await SupabaseProjectAssetsService.getProjectAssets(project.id);
+            assetsMap[project.id] = assets;
+        }
+        setUploadedFiles(assetsMap);
+    }, [projects]);
 
+    // Load assets on component mount, when projects change, and on tab visibility
+    useEffect(() => {
         if (projects.length > 0) {
             loadAssets();
         }
-    }, [projects]);
+
+        const handleTabVisible = () => {
+            console.log('ProjectOverview visible, refreshing assets...');
+            if (projects.length > 0) {
+                loadAssets();
+            }
+        };
+
+        window.addEventListener('tab-visible', handleTabVisible);
+        return () => window.removeEventListener('tab-visible', handleTabVisible);
+    }, [projects, loadAssets]);
 
     const handleViewInvoice = (project: ProjectRow) => {
         setSelectedProject(project);
