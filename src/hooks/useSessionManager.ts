@@ -25,14 +25,23 @@ export function useSessionManager() {
       }
     };
 
+    const handleTabVisible = () => {
+      console.log('Tab is visible, checking session immediately.');
+      manageSession();
+    };
+
     // Run on mount
     manageSession();
 
     // Then run on an interval
     intervalId = setInterval(manageSession, SESSION_REFRESH_INTERVAL);
 
+    // Listen for tab visibility changes, dispatched from useTabVisibility.ts
+    window.addEventListener('tab-visible', handleTabVisible);
+
     return () => {
       clearInterval(intervalId);
+      window.removeEventListener('tab-visible', handleTabVisible);
     };
   }, []);
 }

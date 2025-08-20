@@ -8,6 +8,8 @@ import { AdminLogin } from './components/admin/AdminLogin';
 import { AuthModal } from './components/auth/AuthModal';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useUserSync } from './hooks/useUserSync';
+import { useSessionManager } from './hooks/useSessionManager';
+import { useTabVisibility } from './hooks/useTabVisibility';
 import { ProjectService } from './services/supabase/projects';
 import type { OnboardingData } from './components/onboarding';
 
@@ -48,6 +50,10 @@ function AppContent() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   // useWebsiteRequests removed - using simple approach
   const { user } = useAuth();
+
+  // Session and visibility management
+  useTabVisibility();
+  useSessionManager();
 
   // Enable automatic user synchronization
   useUserSync();
