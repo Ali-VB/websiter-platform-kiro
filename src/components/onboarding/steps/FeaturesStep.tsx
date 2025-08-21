@@ -3,13 +3,30 @@ import { motion } from 'framer-motion';
 import { staggerContainer, fadeInUp, cardHover } from '../../../utils/motion';
 import { Button } from '../../common/Button';
 import type { OnboardingData } from '../OnboardingFlow';
+import {
+    Palette,
+    MessageSquare,
+    Search,
+    Mail,
+    Languages,
+    BookOpen,
+    CreditCard,
+    BarChart2,
+    Zap,
+    Lock,
+    ClipboardList,
+    Share2,
+    Star,
+    Flame,
+    Check
+} from 'lucide-react';
 
 interface FeatureOption {
     id: string;
     title: string;
     description: string;
     price: number;
-    icon: string;
+    icon: React.ReactNode;
     category: 'design' | 'communication' | 'functionality' | 'growth';
     popular?: boolean;
 }
@@ -21,7 +38,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Custom UI Design',
         description: 'Tailored brand visuals',
         price: 1200,
-        icon: '🎨',
+        icon: <Palette className="w-6 h-6" />,
         category: 'design',
         popular: true,
     },
@@ -30,7 +47,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Live Chat',
         description: 'Real-time customer support',
         price: 200,
-        icon: '💬',
+        icon: <MessageSquare className="w-6 h-6" />,
         category: 'communication',
         popular: true,
     },
@@ -39,7 +56,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Advanced SEO',
         description: 'Speed, structure, meta tags',
         price: 500,
-        icon: '🔍',
+        icon: <Search className="w-6 h-6" />,
         category: 'growth',
         popular: true,
     },
@@ -48,7 +65,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Email Marketing',
         description: 'Mailchimp integration',
         price: 250,
-        icon: '📧',
+        icon: <Mail className="w-6 h-6" />,
         category: 'communication',
     },
     {
@@ -56,7 +73,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Multi-language',
         description: 'Add French or more',
         price: 600,
-        icon: '🌐',
+        icon: <Languages className="w-6 h-6" />,
         category: 'functionality',
     },
     {
@@ -64,7 +81,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Blog Section',
         description: 'With categories & search',
         price: 400,
-        icon: '📝',
+        icon: <BookOpen className="w-6 h-6" />,
         category: 'functionality',
     },
     {
@@ -72,7 +89,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Payment Gateway',
         description: 'PayPal/Stripe integration',
         price: 400,
-        icon: '💳',
+        icon: <CreditCard className="w-6 h-6" />,
         category: 'functionality',
     },
     {
@@ -80,7 +97,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Analytics Setup',
         description: 'Google Analytics + Meta',
         price: 200,
-        icon: '📊',
+        icon: <BarChart2 className="w-6 h-6" />,
         category: 'growth',
     },
     {
@@ -88,7 +105,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Speed Optimization',
         description: 'CDN, compression, lazy load',
         price: 300,
-        icon: '⚡',
+        icon: <Zap className="w-6 h-6" />,
         category: 'growth',
     },
     {
@@ -96,7 +113,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Member Login',
         description: 'Gated access areas',
         price: 600,
-        icon: '🔐',
+        icon: <Lock className="w-6 h-6" />,
         category: 'functionality',
     },
     {
@@ -104,7 +121,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Custom Forms',
         description: 'Advanced lead capture',
         price: 200,
-        icon: '📋',
+        icon: <ClipboardList className="w-6 h-6" />,
         category: 'communication',
     },
     {
@@ -112,7 +129,7 @@ const FEATURES: FeatureOption[] = [
         title: 'Social Integration',
         description: 'Connect social accounts',
         price: 150,
-        icon: '📱',
+        icon: <Share2 className="w-6 h-6" />,
         category: 'communication',
     },
 ];
@@ -182,12 +199,6 @@ export const FeaturesStep: React.FC<FeaturesStepProps> = ({
 
         if (purpose === 'business') {
             suggestions.push('custom-design', 'live-chat', 'advanced-seo');
-        } else if (purpose === 'store') {
-            suggestions.push('custom-design', 'live-chat', 'advanced-seo', 'speed-optimization');
-        } else if (purpose === 'booking') {
-            suggestions.push('custom-design', 'live-chat', 'custom-forms');
-        } else if (purpose === 'blog') {
-            suggestions.push('advanced-seo', 'social-media', 'analytics-setup');
         }
 
         return suggestions;
@@ -263,7 +274,7 @@ export const FeaturesStep: React.FC<FeaturesStepProps> = ({
                                     animate={{ scale: 1 }}
                                     transition={{ delay: 0.3, type: 'spring', stiffness: 500 }}
                                 >
-                                    ★
+                                    <Star className="w-3 h-3" />
                                 </motion.div>
                             )}
 
@@ -275,7 +286,7 @@ export const FeaturesStep: React.FC<FeaturesStepProps> = ({
                                     animate={{ scale: 1 }}
                                     transition={{ delay: 0.3, type: 'spring', stiffness: 500 }}
                                 >
-                                    🔥
+                                    <Flame className="w-3 h-3" />
                                 </motion.div>
                             )}
 
@@ -314,20 +325,7 @@ export const FeaturesStep: React.FC<FeaturesStepProps> = ({
                                     transition={{ type: 'spring', stiffness: 500 }}
                                 >
                                     {selectedFeatures.includes(feature.id) && (
-                                        <motion.svg
-                                            className="w-2.5 h-2.5 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            transition={{ type: 'spring', stiffness: 500 }}
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clipRule="evenodd"
-                                            />
-                                        </motion.svg>
+                                        <Check className="w-2.5 h-2.5 text-white" />
                                     )}
                                 </motion.div>
                             </div>

@@ -3,6 +3,11 @@ import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer } from '../../../utils/motion';
 import { Button } from '../../common/Button';
 import type { OnboardingData } from '../OnboardingFlow';
+import {
+    AlertTriangle,
+    Check,
+    X
+} from 'lucide-react';
 
 interface MaintenancePlan {
     id: string;
@@ -193,7 +198,7 @@ export const MaintenanceStep: React.FC<MaintenanceStepProps> = ({
                             {plan.warning && (
                                 <div className="mb-3 p-2 bg-warning-100 border border-warning-300 rounded-lg">
                                     <div className="flex items-start gap-1">
-                                        <span className="text-warning-600 text-sm">⚠️</span>
+                                        <AlertTriangle className="w-4 h-4 text-warning-600" />
                                         <p className="text-xs text-warning-800">{plan.warning}</p>
                                     </div>
                                 </div>
@@ -203,9 +208,7 @@ export const MaintenanceStep: React.FC<MaintenanceStepProps> = ({
                             <div className="space-y-1">
                                 {plan.features.map((feature, index) => (
                                     <div key={index} className="flex items-start gap-1">
-                                        <span className={`text-xs mt-0.5 ${plan.warning ? '❌' : '✅'}`}>
-                                            {plan.warning ? '❌' : '✅'}
-                                        </span>
+                                        {plan.warning ? <X className="w-4 h-4 text-red-500" /> : <Check className="w-4 h-4 text-green-500" />}
                                         <span className="text-xs text-secondary-700">{feature}</span>
                                     </div>
                                 ))}

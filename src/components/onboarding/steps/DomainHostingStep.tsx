@@ -4,6 +4,14 @@ import { fadeInUp } from '../../../utils/motion';
 import { Button } from '../../common/Button';
 import { Input } from '../../common/Input';
 import type { OnboardingData } from '../OnboardingFlow';
+import {
+    CheckCircle,
+    PlusCircle,
+    Home,
+    Rocket,
+    DollarSign,
+    Globe
+} from 'lucide-react';
 
 export interface DomainHostingStepProps {
     data: OnboardingData;
@@ -90,7 +98,7 @@ export const DomainHostingStep: React.FC<DomainHostingStepProps> = ({
                             onClick={() => setDomainChoice('existing')}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="text-2xl">✅</div>
+                                <div className="text-2xl"><CheckCircle className="w-6 h-6" /></div>
                                 <div>
                                     <div className="font-semibold text-secondary-900">I already have a domain</div>
                                     <div className="text-sm text-secondary-600">Enter your existing domain name</div>
@@ -122,7 +130,7 @@ export const DomainHostingStep: React.FC<DomainHostingStepProps> = ({
                             onClick={() => setDomainChoice('new')}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="text-2xl">🆕</div>
+                                <div className="text-2xl"><PlusCircle className="w-6 h-6" /></div>
                                 <div>
                                     <div className="font-semibold text-secondary-900">I need a new domain</div>
                                     <div className="text-sm text-secondary-600">We'll help you find one (CAD $20–30/year)</div>
@@ -145,7 +153,7 @@ export const DomainHostingStep: React.FC<DomainHostingStepProps> = ({
                             onClick={() => setHostingChoice('existing')}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="text-2xl">🏠</div>
+                                <div className="text-2xl"><Home className="w-6 h-6" /></div>
                                 <div>
                                     <div className="font-semibold text-secondary-900">I have hosting</div>
                                     <div className="text-sm text-secondary-600">Enter your hosting provider</div>
@@ -178,7 +186,7 @@ export const DomainHostingStep: React.FC<DomainHostingStepProps> = ({
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="text-2xl">🚀</div>
+                                    <div className="text-2xl"><Rocket className="w-6 h-6" /></div>
                                     <div>
                                         <div className="font-semibold text-secondary-900">Recommended Hosting</div>
                                         <div className="text-sm text-secondary-600">SSL, backups, CDN, 99.9% uptime</div>
@@ -200,7 +208,7 @@ export const DomainHostingStep: React.FC<DomainHostingStepProps> = ({
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="text-2xl">💰</div>
+                                    <div className="text-2xl"><DollarSign className="w-6 h-6" /></div>
                                     <div>
                                         <div className="font-semibold text-secondary-900">Budget Hosting</div>
                                         <div className="text-sm text-secondary-600">Basic shared hosting</div>

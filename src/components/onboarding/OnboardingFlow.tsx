@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Removed unused imports
 import { Button } from '../common/Button';
 import { PurposeStep } from './steps/PurposeStep';
 import { FeaturesStep } from './steps/FeaturesStep';
@@ -10,6 +9,15 @@ import { MaintenanceStep } from './steps/MaintenanceStep';
 import { AuthStep } from './steps/AuthStep';
 import { ProjectSuccess } from './ProjectSuccess';
 import { ProjectCreated } from './ProjectCreated';
+import {
+    Check,
+    Target,
+    Feather,
+    Palette,
+    Globe,
+    LifeBuoy,
+    User,
+} from 'lucide-react';
 
 export interface OnboardingData {
     websitePurpose?: {
@@ -68,12 +76,12 @@ export interface OnboardingFlowProps {
 }
 
 const STEPS = [
-    { id: 'purpose', title: 'Website Purpose', component: PurposeStep },
-    { id: 'features', title: 'Additional Features', component: FeaturesStep },
-    { id: 'inspiration', title: 'Website Inspiration', component: InspirationStep },
-    { id: 'domain-hosting', title: 'Domain & Hosting', component: DomainHostingStep },
-    { id: 'maintenance', title: 'Maintenance & Support', component: MaintenanceStep },
-    { id: 'auth', title: 'Create Account', component: AuthStep },
+    { id: 'purpose', title: 'Website Purpose', component: PurposeStep, icon: <Target className="w-5 h-5" /> },
+    { id: 'features', title: 'Additional Features', component: FeaturesStep, icon: <Feather className="w-5 h-5" /> },
+    { id: 'inspiration', title: 'Website Inspiration', component: InspirationStep, icon: <Palette className="w-5 h-5" /> },
+    { id: 'domain-hosting', title: 'Domain & Hosting', component: DomainHostingStep, icon: <Globe className="w-5 h-5" /> },
+    { id: 'maintenance', title: 'Maintenance & Support', component: MaintenanceStep, icon: <LifeBuoy className="w-5 h-5" /> },
+    { id: 'auth', title: 'Create Account', component: AuthStep, icon: <User className="w-5 h-5" /> },
 ];
 
 export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
@@ -209,7 +217,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                                             : 'bg-secondary-300 text-secondary-600'
                                         }`}
                                 >
-                                    {index < currentStep ? '✓' : index + 1}
+                                    {index < currentStep ? <Check className="w-4 h-4" /> : index + 1}
                                 </div>
                                 <div className="flex-1">
                                     <div className={`font-medium text-sm ${index === currentStep ? 'text-primary-700' :

@@ -5,11 +5,11 @@ import { Card } from '../../common/Card';
 import { staggerContainer, fadeInUp } from '../../../utils/motion';
 import type { OnboardingData } from '../OnboardingFlow';
 import {
-    PlusIcon,
-    XMarkIcon,
-    GlobeAltIcon,
-    EyeIcon
-} from '@heroicons/react/24/outline';
+    Plus,
+    X,
+    Globe,
+    Eye
+} from 'lucide-react';
 
 export interface InspirationStepProps {
     data: OnboardingData;
@@ -92,7 +92,7 @@ export const InspirationStep: React.FC<InspirationStepProps> = ({
                 transition={{ duration: 0.4 }}
             >
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <EyeIcon className="w-8 h-8 text-purple-600" />
+                    <Eye className="w-8 h-8 text-purple-600" />
                 </div>
                 <h2 className="text-3xl font-bold text-secondary-900 mb-3">
                     Website Inspiration
@@ -124,7 +124,7 @@ export const InspirationStep: React.FC<InspirationStepProps> = ({
                                         className="text-red-500 hover:text-red-700 transition-colors"
                                         title="Remove this website"
                                     >
-                                        <XMarkIcon className="w-5 h-5" />
+                                        <X className="w-5 h-5" />
                                     </button>
                                 )}
                             </div>
@@ -136,7 +136,7 @@ export const InspirationStep: React.FC<InspirationStepProps> = ({
                                         Website URL {index === 0 && <span className="text-red-500">*</span>}
                                     </label>
                                     <div className="relative">
-                                        <GlobeAltIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-secondary-400" />
+                                        <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-secondary-400" />
                                         <input
                                             type="text"
                                             value={inspiration.url}
@@ -193,7 +193,7 @@ export const InspirationStep: React.FC<InspirationStepProps> = ({
                             className="w-full p-6 border-2 border-dashed border-secondary-300 rounded-lg hover:border-primary-400 hover:bg-primary-50 transition-colors group"
                         >
                             <div className="flex items-center justify-center space-x-2 text-secondary-600 group-hover:text-primary-600">
-                                <PlusIcon className="w-5 h-5" />
+                                <Plus className="w-5 h-5" />
                                 <span>Add Another Website (Optional)</span>
                             </div>
                         </button>

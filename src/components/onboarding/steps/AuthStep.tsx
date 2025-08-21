@@ -5,6 +5,10 @@ import { Button, Card } from '../../common';
 import { SignUpForm, LoginForm } from '../../auth';
 import { useAuth } from '../../../hooks/useAuth';
 import type { OnboardingData } from '../OnboardingFlow';
+import {
+    CheckCircle,
+    PartyPopper
+} from 'lucide-react';
 
 interface AuthStepProps {
     data: OnboardingData;
@@ -51,9 +55,7 @@ export const AuthStep: React.FC<AuthStepProps> = ({
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+                        <CheckCircle className="w-8 h-8 text-success-600" />
                     </div>
                     <h2 className="text-2xl font-bold text-secondary-900 mb-2">
                         Welcome back, {user.name}!
@@ -75,8 +77,8 @@ export const AuthStep: React.FC<AuthStepProps> = ({
                     animate="animate"
                     className="text-center mb-8"
                 >
-                    <h1 className="text-4xl md:text-5xl font-bold text-secondary-900 mb-4">
-                        Almost There! 🎉
+                    <h1 className="text-4xl md:text-5xl font-bold text-secondary-900 mb-4 flex items-center justify-center">
+                        Almost There! <PartyPopper className="w-8 h-8 ml-2" />
                     </h1>
                     <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
                         Create your account to save your project details and access your dashboard

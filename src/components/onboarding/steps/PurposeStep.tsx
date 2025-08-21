@@ -3,6 +3,14 @@ import { motion } from 'framer-motion';
 import { staggerContainer, fadeInUp, cardHover } from '../../../utils/motion';
 import { Button } from '../../common/Button';
 import type { OnboardingData } from '../OnboardingFlow';
+import {
+    Briefcase,
+    Edit,
+    ShoppingCart,
+    Calendar,
+    Zap,
+    Image,
+} from 'lucide-react';
 
 interface WebsitePurpose {
     id: string;
@@ -10,7 +18,7 @@ interface WebsitePurpose {
     startingPrice: number;
     includes: string[];
     recommendedFor: string;
-    icon: string;
+    icon: React.ReactNode;
     popular?: boolean;
     fastestDelivery?: boolean;
 }
@@ -27,7 +35,7 @@ const WEBSITE_PURPOSES: WebsitePurpose[] = [
             'Mobile responsive design'
         ],
         recommendedFor: 'Local businesses, startups, freelancers',
-        icon: '🏢',
+        icon: <Briefcase className="w-8 h-8" />,
         popular: true,
     },
     {
@@ -40,7 +48,7 @@ const WEBSITE_PURPOSES: WebsitePurpose[] = [
             'Standard blog template'
         ],
         recommendedFor: 'Writers, content creators, students',
-        icon: '📝',
+        icon: <Edit className="w-8 h-8" />,
         fastestDelivery: true,
     },
     {
@@ -53,7 +61,7 @@ const WEBSITE_PURPOSES: WebsitePurpose[] = [
             'Inventory management'
         ],
         recommendedFor: 'Small ecommerce businesses',
-        icon: '🛒',
+        icon: <ShoppingCart className="w-8 h-8" />,
     },
     {
         id: 'booking',
@@ -65,7 +73,7 @@ const WEBSITE_PURPOSES: WebsitePurpose[] = [
             'Client dashboard & payment collection'
         ],
         recommendedFor: 'Salons, coaches, tutors',
-        icon: '📅',
+        icon: <Calendar className="w-8 h-8" />,
     },
     {
         id: 'custom',
@@ -77,7 +85,7 @@ const WEBSITE_PURPOSES: WebsitePurpose[] = [
             'Optimized for growth'
         ],
         recommendedFor: 'Complex projects, unique requirements',
-        icon: '⚡',
+        icon: <Zap className="w-8 h-8" />,
     },
     {
         id: 'portfolio',
@@ -89,7 +97,7 @@ const WEBSITE_PURPOSES: WebsitePurpose[] = [
             'Client testimonial section'
         ],
         recommendedFor: 'Photographers, designers, artists',
-        icon: '🎨',
+        icon: <Image className="w-8 h-8" />,
     },
 ];
 

@@ -4,13 +4,27 @@ import koalaIllustration from "../assets/koala-illustration.png";
 import actionBackground from "../assets/footer-trees.png";
 import { useState } from "react";
 import ContactUsModal from "./ContactUsModal";
+import {
+  CheckCircle,
+  Settings,
+  Tablet,
+  Globe,
+  LifeBuoy,
+  Target,
+  Feather,
+  Palette,
+  Wrench,
+} from "lucide-react";
 
-export default function WebsiterLanding({ onStartProject, onSignInClick }: { onStartProject: () => void; onSignInClick: () => void }) {
+export default function WebsiterLanding({
+  onStartProject,
+  onSignInClick,
+}: { onStartProject: () => void; onSignInClick: () => void }) {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const handleHowItWorksClick = () => {
-    const element = document.getElementById('how-it-works');
+    const element = document.getElementById("how-it-works");
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -224,20 +238,13 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl overflow-hidden">
                 {/* Step 1 - Pine Green */}
                 <div className="bg-green-200 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
-                  <div className="text-xs text-gray-700 mb-4 font-mono">
+                  <div className="text-base text-gray-700 mb-4 font-mono font-bold">
                     <div>STEP 01</div>
-                    <div>PURPOSE</div>
+                    <div className="text-lg text-gray-900">PURPOSE</div>
                   </div>
                   <div>
                     <div className="mb-6">
-                      <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
+                      <Target className="w-12 h-12 text-gray-600" />
                     </div>
                     <h3 className="text-3xl md:text-4xl text-gray-900 leading-tight mb-4 font-mono">
                       What's the Purpose
@@ -252,26 +259,13 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
 
                 {/* Step 2 - Oak Brown */}
                 <div className="bg-gray-800 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
-                  <div className="text-xs text-gray-300 mb-4 font-mono">
+                  <div className="text-base text-gray-300 mb-4 font-mono font-bold">
                     <div>STEP 02</div>
-                    <div>FEATURES</div>
+                    <div className="text-lg text-white">FEATURES</div>
                   </div>
                   <div>
                     <div className="mb-6">
-                      <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
+                      <Feather className="w-12 h-12 text-gray-400" />
                     </div>
                     <h3 className="text-3xl md:text-4xl text-white leading-tight mb-4 font-mono">Add Extra Features</h3>
                     <p className="text-sm text-gray-300 leading-relaxed">
@@ -284,20 +278,13 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
 
                 {/* Step 3 - Ivory Yellow */}
                 <div className="bg-yellow-100 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
-                  <div className="text-xs text-gray-700 mb-4 font-mono">
+                  <div className="text-base text-gray-700 mb-4 font-mono font-bold">
                     <div>STEP 03</div>
-                    <div>INSPIRATION</div>
+                    <div className="text-lg text-gray-900">INSPIRATION</div>
                   </div>
                   <div>
                     <div className="mb-6">
-                      <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"
-                        />
-                      </svg>
+                      <Palette className="w-12 h-12 text-gray-600" />
                     </div>
                     <h3 className="text-3xl md:text-4xl text-gray-900 leading-tight mb-4 font-mono">
                       Website Inspiration
@@ -315,20 +302,13 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl overflow-hidden">
                 {/* Step 4 - Soft Blue */}
                 <div className="bg-blue-100 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
-                  <div className="text-xs text-gray-700 mb-4 font-mono">
+                  <div className="text-base text-gray-700 mb-4 font-mono font-bold">
                     <div>STEP 04</div>
-                    <div>DOMAIN</div>
+                    <div className="text-lg text-gray-900">DOMAIN</div>
                   </div>
                   <div>
                     <div className="mb-6">
-                      <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                        />
-                      </svg>
+                      <Globe className="w-12 h-12 text-gray-600" />
                     </div>
                     <h3 className="text-3xl md:text-4xl text-gray-900 leading-tight mb-4 font-mono">
                       Domain & Hosting Setup
@@ -342,21 +322,13 @@ export default function WebsiterLanding({ onStartProject, onSignInClick }: { onS
 
                 {/* Step 5 - Soft Pink */}
                 <div className="bg-pink-100 p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
-                  <div className="text-xs text-gray-700 mb-4 font-mono">
+                  <div className="text-base text-gray-700 mb-4 font-mono font-bold">
                     <div>STEP 05</div>
-                    <div>SUPPORT</div>
+                    <div className="text-lg text-gray-900">SUPPORT</div>
                   </div>
                   <div>
                     <div className="mb-6">
-                      <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                        />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4" />
-                      </svg>
+                      <LifeBuoy className="w-12 h-12 text-gray-600" />
                     </div>
                     <h3 className="text-3xl md:text-4xl text-gray-900 leading-tight mb-4 font-mono">
                       Maintenance & Support
