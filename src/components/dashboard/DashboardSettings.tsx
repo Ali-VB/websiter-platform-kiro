@@ -3,34 +3,58 @@ import { motion } from 'framer-motion';
 import { Card, Button, Input } from '../common';
 import { useAuth } from '../../hooks/useAuth';
 import { fadeInUp, staggerContainer } from '../../utils/motion';
+import { useToast } from '../../hooks/use-toast';
 
-export const DashboardSettings: React.FC = () => {
-    const { user, updateProfile } = useAuth();
+interface DashboardSettingsProps {
+    onRequestDelete: () => void;
+}
+
+export const DashboardSettings: React.FC<DashboardSettingsProps> = ({ onRequestDelete }) => {
+    const { user, updatePassword } = useAuth();
+    const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: user?.name || '',
         email: user?.email || '',
     });
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        retypeNewPassword: '',
+    });
+
+    const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!passwordData.currentPassword) {
+            toast({ title: 'Error', description: 'Please enter your current password.', variant: 'destructive' });
+            return;
+        }
+
+        if (passwordData.newPassword !== passwordData.retypeNewPassword) {
+            toast({ title: 'Error', description: 'New passwords do not match.', variant: 'destructive' });
+            return;
+        }
         setLoading(true);
 
         try {
-            await updateProfile({
-                name: formData.name,
+            await updatePassword(passwordData.currentPassword, passwordData.newPassword);
+            toast({ title: 'Success', description: 'Password updated successfully!' });
+            setPasswordData({
+                currentPassword: '',
+                newPassword: '',
+                retypeNewPassword: '',
             });
-            alert('Profile updated successfully!');
-        } catch (error) {
-            console.error('Failed to update profile:', error);
-            alert('Failed to update profile. Please try again.');
+        } catch (error: any) {
+            console.error('Failed to update password:', error);
+            toast({ title: 'Error', description: `Failed to update password: ${error.message}`, variant: 'destructive' });
         } finally {
             setLoading(false);
         }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
+    const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPasswordData(prev => ({
             ...prev,
             [e.target.name]: e.target.value,
         }));
@@ -50,7 +74,7 @@ export const DashboardSettings: React.FC = () => {
                         👤 Profile Information
                     </h2>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-secondary-700 mb-2">
@@ -61,10 +85,8 @@ export const DashboardSettings: React.FC = () => {
                                     name="name"
                                     type="text"
                                     value={formData.name}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter your full name"
-                                    required
-                                    disabled={loading}
+                                    disabled
+                                    className="bg-secondary-50"
                                 />
                             </div>
 
@@ -80,98 +102,9 @@ export const DashboardSettings: React.FC = () => {
                                     disabled
                                     className="bg-secondary-50"
                                 />
-                                <p className="text-xs text-secondary-500 mt-1">
-                                    Email cannot be changed. Contact support if needed.
-                                </p>
                             </div>
-                        </div>
-
-                        <div className="flex justify-end">
-                            <Button
-                                type="submit"
-                                loading={loading}
-                                className="px-6"
-                            >
-                                Save Changes
-                            </Button>
                         </div>
                     </form>
-                </Card>
-            </motion.div>
-
-            {/* Account Information */}
-            <motion.div variants={fadeInUp}>
-                <Card className="p-6">
-                    <h2 className="text-xl font-semibold text-secondary-900 mb-4">
-                        📋 Account Information
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <div className="text-sm text-secondary-600 mb-1">Account Type</div>
-                            <div className="font-medium text-secondary-900">
-                                {user?.role === 'admin' ? 'Administrator' : 'Client'}
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="text-sm text-secondary-600 mb-1">Member Since</div>
-                            <div className="font-medium text-secondary-900">
-                                {new Date().toLocaleDateString()}
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="text-sm text-secondary-600 mb-1">Onboarding Status</div>
-                            <div className="font-medium text-secondary-900">
-                                {user?.onboarding_completed ? (
-                                    <span className="text-success-600">✅ Completed</span>
-                                ) : (
-                                    <span className="text-warning-600">⏳ In Progress</span>
-                                )}
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="text-sm text-secondary-600 mb-1">Account ID</div>
-                            <div className="font-mono text-xs text-secondary-700 bg-secondary-50 px-2 py-1 rounded">
-                                {user?.id?.slice(0, 8)}...
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            </motion.div>
-
-            {/* Preferences */}
-            <motion.div variants={fadeInUp}>
-                <Card className="p-6">
-                    <h2 className="text-xl font-semibold text-secondary-900 mb-4">
-                        ⚙️ Preferences
-                    </h2>
-
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
-                            <div>
-                                <div className="font-medium text-secondary-900">Email Notifications</div>
-                                <div className="text-sm text-secondary-600">Receive updates about your projects</div>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" defaultChecked />
-                                <div className="w-11 h-6 bg-secondary-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-secondary-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-                            </label>
-                        </div>
-
-                        <div className="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
-                            <div>
-                                <div className="font-medium text-secondary-900">SMS Notifications</div>
-                                <div className="text-sm text-secondary-600">Get text updates for urgent matters</div>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" />
-                                <div className="w-11 h-6 bg-secondary-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-secondary-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-                            </label>
-                        </div>
-                    </div>
                 </Card>
             </motion.div>
 
@@ -182,27 +115,73 @@ export const DashboardSettings: React.FC = () => {
                         🔒 Security
                     </h2>
 
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between p-3 border border-secondary-200 rounded-lg">
+                    <form onSubmit={handlePasswordChange} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <div className="font-medium text-secondary-900">Password</div>
-                                <div className="text-sm text-secondary-600">Last changed 30 days ago</div>
+                                <label
+                                    htmlFor="currentPassword"
+                                    className="block text-sm font-medium text-secondary-700 mb-2"
+                                >
+                                    Current Password
+                                </label>
+                                <Input
+                                    id="currentPassword"
+                                    name="currentPassword"
+                                    type="password"
+                                    placeholder="Enter your current password"
+                                    value={passwordData.currentPassword}
+                                    onChange={handlePasswordInputChange}
+                                    required
+                                />
                             </div>
-                            <Button variant="outline" size="sm">
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    htmlFor="newPassword"
+                                    className="block text-sm font-medium text-secondary-700 mb-2"
+                                >
+                                    New Password
+                                </label>
+                                <Input
+                                    id="newPassword"
+                                    name="newPassword"
+                                    type="password"
+                                    placeholder="Enter your new password"
+                                    value={passwordData.newPassword}
+                                    onChange={handlePasswordInputChange}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="retypeNewPassword"
+                                    className="block text-sm font-medium text-secondary-700 mb-2"
+                                >
+                                    Retype New Password
+                                </label>
+                                <Input
+                                    id="retypeNewPassword"
+                                    name="retypeNewPassword"
+                                    type="password"
+                                    placeholder="Retype your new password"
+                                    value={passwordData.retypeNewPassword}
+                                    onChange={handlePasswordInputChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <Button
+                                type="submit"
+                                loading={loading}
+                                className="px-6"
+                            >
                                 Change Password
                             </Button>
                         </div>
-
-                        <div className="flex items-center justify-between p-3 border border-secondary-200 rounded-lg">
-                            <div>
-                                <div className="font-medium text-secondary-900">Two-Factor Authentication</div>
-                                <div className="text-sm text-secondary-600">Add an extra layer of security</div>
-                            </div>
-                            <Button variant="outline" size="sm">
-                                Enable 2FA
-                            </Button>
-                        </div>
-                    </div>
+                    </form>
                 </Card>
             </motion.div>
 
@@ -218,15 +197,16 @@ export const DashboardSettings: React.FC = () => {
                             <div>
                                 <div className="font-medium text-error-900">Delete Account</div>
                                 <div className="text-sm text-error-700">
-                                    Permanently delete your account and all associated data
+                                    To delete your account, please create a support ticket.
                                 </div>
                             </div>
                             <Button
                                 variant="outline"
                                 size="sm"
                                 className="border-error-300 text-error-700 hover:bg-error-100"
+                                onClick={onRequestDelete}
                             >
-                                Delete Account
+                                Go to Support
                             </Button>
                         </div>
                     </div>
@@ -235,3 +215,5 @@ export const DashboardSettings: React.FC = () => {
         </motion.div>
     );
 };
+
+export default DashboardSettings;

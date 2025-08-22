@@ -1,30 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '../common';
 import { LoginForm } from './LoginForm';
 import { SignUpForm } from './SignUpForm';
 import { PasswordResetForm } from './PasswordResetForm';
+import { NewPasswordForm } from './NewPasswordForm';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useAuth } from '../../hooks/useAuth'; // Import useAuth
 
 interface AuthModalProps {
     isOpen: boolean;
     onClose: () => void;
     initialView?: 'login' | 'signup';
-    onSuccess?: () => void;
 }
 
-type AuthView = 'login' | 'signup' | 'reset';
+type AuthView = 'login' | 'signup' | 'reset' | 'new-password';
 
 export const AuthModal: React.FC<AuthModalProps> = ({
     isOpen,
     onClose,
     initialView = 'login',
-    onSuccess,
 }) => {
     const [currentView, setCurrentView] = useState<AuthView>(initialView);
+    const navigate = useNavigate();
+    const { user } = useAuth();
 
-    const handleSuccess = () => {
-        onSuccess?.();
-        onClose();
-    };
+    useEffect(() => {
+        // Set initial view when modal opens
+        if (isOpen) {
+            setCurrentView(initialView);
+        }
+    }, [isOpen, initialView]);
+
+    useEffect(() => {
+        // If modal is open and user is logged in, navigate to dashboard
+        if (isOpen && user) {
+            navigate('/dashboard');
+            onClose(); // Close modal after navigation
+        }
+    }, [isOpen, user, navigate, onClose]);
 
     const switchView = (view: AuthView) => {
         setCurrentView(view);
@@ -35,7 +48,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             case 'login':
                 return (
                     <LoginForm
-                        onSuccess={handleSuccess}
                         onSwitchToSignUp={() => switchView('signup')}
                         onSwitchToReset={() => switchView('reset')}
                     />
@@ -43,13 +55,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             case 'signup':
                 return (
                     <SignUpForm
-                        onSuccess={handleSuccess}
                         onSwitchToLogin={() => switchView('login')}
                     />
                 );
             case 'reset':
                 return (
                     <PasswordResetForm
+                        onSuccess={() => switchView('login')}
+                        onBack={() => switchView('login')}
+                    />
+                );
+            case 'new-password':
+                return (
+                    <NewPasswordForm
                         onSuccess={() => switchView('login')}
                         onBack={() => switchView('login')}
                     />
@@ -67,6 +85,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 return 'Sign Up';
             case 'reset':
                 return 'Reset Password';
+            case 'new-password':
+                return 'Set New Password';
         }
     }
 

@@ -5,6 +5,7 @@ import { TicketService } from '../../services/supabase/tickets';
 import { useAuth } from '../../hooks/useAuth';
 import { fadeInUp, staggerContainer } from '../../utils/motion';
 import toast from 'react-hot-toast';
+import { Check } from 'lucide-react';
 
 interface CreateTicketModalProps {
     onClose: () => void;
@@ -76,30 +77,26 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="p-6 max-w-2xl mx-auto"
+            className="p-6 max-w-3xl mx-auto"
         >
             {/* Header */}
             <motion.div variants={fadeInUp} className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-bold text-secondary-900">
-                        🎫 Create Support Ticket
-                    </h2>
-                    <Button variant="ghost" onClick={onClose} className="text-secondary-500">
-                        ✕
-                    </Button>
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold text-secondary-900">🎫 Create Support Ticket</h2>
+                    <button onClick={onClose} className="text-secondary-500 hover:text-secondary-700">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
-                <p className="text-secondary-600">
-                    Describe your issue or question and we'll help you resolve it quickly.
-                </p>
+                <p className="text-secondary-600">Describe your issue or question and we'll help you resolve it quickly.</p>
             </motion.div>
 
             {/* Form */}
             <motion.form variants={fadeInUp} onSubmit={handleSubmit} className="space-y-6">
                 {/* Subject */}
                 <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-secondary-700 mb-2">
-                        Subject *
-                    </label>
+                    <label htmlFor="subject" className="block text-sm font-medium text-secondary-700 mb-2">Subject *</label>
                     <Input
                         id="subject"
                         name="subject"
@@ -109,14 +106,13 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
                         placeholder="Brief description of your issue"
                         required
                         disabled={loading}
+                        className="rounded-md"
                     />
                 </div>
 
                 {/* Category */}
                 <div>
-                    <label htmlFor="category" className="block text-sm font-medium text-secondary-700 mb-2">
-                        Category *
-                    </label>
+                    <label htmlFor="category" className="block text-sm font-medium text-secondary-700 mb-2">Category *</label>
                     <select
                         id="category"
                         name="category"
@@ -124,33 +120,38 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
                         onChange={handleInputChange}
                         required
                         disabled={loading}
-                        className="input"
+                        className="w-full px-4 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                         {categories.map((category) => (
-                            <option key={category} value={category}>
-                                {category}
-                            </option>
+                            <option key={category} value={category}>{category}</option>
                         ))}
                     </select>
                 </div>
 
                 {/* Priority */}
                 <div>
-                    <label className="block text-sm font-medium text-secondary-700 mb-2">
-                        Priority *
-                    </label>
+                    <label className="block text-sm font-medium text-secondary-700 mb-2">Priority *</label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {priorities.map((priority) => (
                             <button
                                 key={priority.value}
                                 type="button"
-                                onClick={() => setFormData(prev => ({ ...prev, priority: priority.value }))}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setFormData(prev => ({ ...prev, priority: priority.value }));
+                                }}
                                 disabled={loading}
-                                className={`p-3 border rounded-lg text-center transition-all ${formData.priority === priority.value
-                                    ? 'border-primary-300 bg-primary-50 text-primary-700'
-                                    : 'border-secondary-200 hover:border-secondary-300 text-secondary-700'
+                                aria-pressed={formData.priority === priority.value}
+                                className={`relative p-3 border rounded-lg text-center transition-all select-none cursor-pointer transform will-change-transform focus:outline-none focus:ring-2 focus:ring-primary-400 ${formData.priority === priority.value
+                                    ? 'border-transparent bg-gradient-dark text-neutral-0 shadow-floating scale-105'
+                                    : 'border-secondary-200 hover:border-secondary-300 hover:bg-secondary-50 text-secondary-700'
                                     }`}
                             >
+                                {formData.priority === priority.value && (
+                                    <span className="absolute -top-2 -right-2 bg-primary-600 text-white rounded-full p-1 shadow-lg flex items-center justify-center">
+                                        <Check className="w-3 h-3" />
+                                    </span>
+                                )}
                                 <div className="text-lg mb-1">{priority.icon}</div>
                                 <div className="text-sm font-medium">{priority.label}</div>
                             </button>
@@ -160,9 +161,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
 
                 {/* Description */}
                 <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-secondary-700 mb-2">
-                        Description *
-                    </label>
+                    <label htmlFor="description" className="block text-sm font-medium text-secondary-700 mb-2">Description *</label>
                     <textarea
                         id="description"
                         name="description"
@@ -172,11 +171,9 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
                         required
                         disabled={loading}
                         rows={6}
-                        className="input resize-none"
+                        className="w-full px-4 py-3 border border-secondary-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
-                    <div className="text-xs text-secondary-500 mt-1">
-                        Include as much detail as possible to help us resolve your issue quickly.
-                    </div>
+                    <div className="text-xs text-secondary-500 mt-1">Include as much detail as possible to help us resolve your issue quickly.</div>
                 </div>
 
                 {/* Response Time Notice */}
@@ -204,14 +201,14 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ onClose, o
                         variant="outline"
                         onClick={onClose}
                         disabled={loading}
-                        className="flex-1"
+                        className="flex-1 rounded-full"
                     >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
                         loading={loading}
-                        className="flex-1 bg-primary-600 hover:bg-primary-700"
+                        className="flex-1 bg-primary-600 hover:bg-primary-700 rounded-full"
                     >
                         Create Ticket
                     </Button>

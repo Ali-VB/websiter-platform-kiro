@@ -15,15 +15,16 @@ import {
     CheckCircleIcon,
     TrashIcon
 } from '@heroicons/react/24/outline';
+import { useToast } from '../../hooks/use-toast';
 
 interface AdminSettingsProps {
     className?: string;
 }
 
 export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) => {
-    const { user, updateProfile } = useAuth();
+    const { user, updatePassword } = useAuth();
+    const { toast } = useToast();
     const [loading, setLoading] = useState<string | null>(null);
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     // Profile settings
     const [profileData, setProfileData] = useState({
@@ -49,46 +50,21 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
         requireClientApproval: true
     });
 
-    const showMessage = (type: 'success' | 'error', text: string) => {
-        setMessage({ type, text });
-        setTimeout(() => setMessage(null), 5000);
-    };
-
-    const handleProfileUpdate = async () => {
-        try {
-            setLoading('profile');
-
-            if (profileData.name !== user?.name) {
-                await updateProfile({ name: profileData.name });
-                showMessage('success', 'Profile updated successfully');
-            }
-
-        } catch (error: any) {
-            showMessage('error', `Failed to update profile: ${error.message}`);
-        } finally {
-            setLoading(null);
-        }
-    };
-
     const handlePasswordChange = async () => {
         if (profileData.newPassword !== profileData.confirmPassword) {
-            showMessage('error', 'New passwords do not match');
+            toast({ title: 'Error', description: 'New passwords do not match', variant: 'destructive' });
             return;
         }
 
         if (profileData.newPassword.length < 6) {
-            showMessage('error', 'Password must be at least 6 characters');
+            toast({ title: 'Error', description: 'Password must be at least 6 characters', variant: 'destructive' });
             return;
         }
 
         try {
             setLoading('password');
 
-            const { error } = await supabase.auth.updateUser({
-                password: profileData.newPassword
-            });
-
-            if (error) throw error;
+            await updatePassword(profileData.currentPassword, profileData.newPassword);
 
             setProfileData(prev => ({
                 ...prev,
@@ -97,10 +73,10 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
                 confirmPassword: ''
             }));
 
-            showMessage('success', 'Password updated successfully');
+            toast({ title: 'Success', description: 'Password updated successfully' });
 
         } catch (error: any) {
-            showMessage('error', `Failed to update password: ${error.message}`);
+            toast({ title: 'Error', description: `Failed to update password: ${error.message}`, variant: 'destructive' });
         } finally {
             setLoading(null);
         }
@@ -111,7 +87,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
             ...prev,
             [setting]: !prev[setting]
         }));
-        showMessage('success', 'Setting updated successfully');
+        toast({ title: 'Success', description: 'Setting updated successfully' });
     };
 
     const handleDatabaseBackup = async () => {
@@ -122,10 +98,10 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
             // For now, we'll simulate the process
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            showMessage('success', 'Database backup initiated successfully');
+            toast({ title: 'Success', description: 'Database backup initiated successfully' });
 
         } catch (error: any) {
-            showMessage('error', `Backup failed: ${error.message}`);
+            toast({ title: 'Error', description: `Backup failed: ${error.message}`, variant: 'destructive' });
         } finally {
             setLoading(null);
         }
@@ -139,10 +115,10 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
             localStorage.clear();
             sessionStorage.clear();
 
-            showMessage('success', 'Cache cleared successfully');
+            toast({ title: 'Success', description: 'Cache cleared successfully' });
 
         } catch (error: any) {
-            showMessage('error', `Failed to clear cache: ${error.message}`);
+            toast({ title: 'Error', description: `Failed to clear cache: ${error.message}`, variant: 'destructive' });
         } finally {
             setLoading(null);
         }
@@ -175,10 +151,10 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            showMessage('success', 'Data exported successfully');
+            toast({ title: 'Success', description: 'Data exported successfully' });
 
         } catch (error: any) {
-            showMessage('error', `Export failed: ${error.message}`);
+            toast({ title: 'Error', description: `Export failed: ${error.message}`, variant: 'destructive' });
         } finally {
             setLoading(null);
         }
@@ -189,7 +165,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
         const userInput = prompt(`⚠️ DANGER: This will permanently delete ALL data including projects, clients, and tickets. This action cannot be undone!\n\nType "${confirmText}" to confirm:`);
 
         if (userInput !== confirmText) {
-            showMessage('error', 'Reset cancelled - confirmation text did not match');
+            toast({ title: 'Cancelled', description: 'Reset cancelled - confirmation text did not match', variant: 'destructive' });
             return;
         }
 
@@ -206,10 +182,10 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
                 }
             }
 
-            showMessage('success', 'System reset completed - all data cleared');
+            toast({ title: 'Success', description: 'System reset completed - all data cleared' });
 
         } catch (error: any) {
-            showMessage('error', `System reset failed: ${error.message}`);
+            toast({ title: 'Error', description: `System reset failed: ${error.message}`, variant: 'destructive' });
         } finally {
             setLoading(null);
         }
@@ -227,22 +203,6 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
                 </div>
             </div>
 
-            {/* Message Alert */}
-            {message && (
-                <Card className={`p-4 ${message.type === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                    <div className="flex items-center space-x-2">
-                        {message.type === 'success' ? (
-                            <CheckCircleIcon className="w-5 h-5 text-green-600" />
-                        ) : (
-                            <ExclamationTriangleIcon className="w-5 h-5 text-red-600" />
-                        )}
-                        <span className={message.type === 'success' ? 'text-green-800' : 'text-red-800'}>
-                            {message.text}
-                        </span>
-                    </div>
-                </Card>
-            )}
-
             {/* Profile Settings */}
             <Card className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
@@ -259,8 +219,8 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
                             <input
                                 type="text"
                                 value={profileData.name}
-                                onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                disabled
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                                 placeholder="Enter your full name"
                             />
                         </div>
@@ -276,17 +236,6 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
                                 placeholder="Email cannot be changed"
                             />
                         </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                        <Button
-                            onClick={handleProfileUpdate}
-                            disabled={loading === 'profile'}
-                            loading={loading === 'profile'}
-                            className="bg-blue-600 hover:bg-blue-700"
-                        >
-                            Update Profile
-                        </Button>
                     </div>
                 </div>
             </Card>
@@ -359,12 +308,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ className = '' }) 
                 </h3>
 
                 <div className="space-y-4">
-                    {[
-                        { key: 'emailNotifications', label: 'Email Notifications', description: 'Receive email alerts for important events' },
-                        { key: 'projectUpdates', label: 'Project Updates', description: 'Get notified when projects change status' },
-                        { key: 'clientMessages', label: 'Client Messages', description: 'Receive alerts for new client messages' },
-                        { key: 'systemAlerts', label: 'System Alerts', description: 'Get notified about system issues and maintenance' }
-                    ].map((setting) => (
+                    {[{"key": "emailNotifications", "label": "Email Notifications", "description": "Receive email alerts for important events"}, {"key": "projectUpdates", "label": "Project Updates", "description": "Get notified when projects change status"}, {"key": "clientMessages", "label": "Client Messages", "description": "Receive alerts for new client messages"}, {"key": "systemAlerts", "label": "System Alerts", "description": "Get notified about system issues and maintenance"}].map((setting) => (
                         <div key={setting.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div>
                                 <h4 className="font-medium text-gray-900">{setting.label}</h4>

@@ -247,7 +247,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onStartProject
             case 'support':
                 return <SupportTickets />;
             case 'settings':
-                return <DashboardSettings />;
+                return <DashboardSettings onRequestDelete={() => setActiveView('support')} />;
             default:
                 return (
                     <div className="space-y-8">

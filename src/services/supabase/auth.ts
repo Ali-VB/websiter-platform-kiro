@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase';
-import type { User } from '@supabase/supabase-js';
+// Note: avoid importing unused types to keep linters happy
 import { UserSyncService, type CustomUser } from './userSync';
 
 // Use CustomUser from UserSyncService for consistency
@@ -173,13 +173,31 @@ export class AuthService {
   }
 
   // Update password
-  static async updatePassword(password: string) {
+  static async updatePassword(oldPassword: string, newPassword: string) {
     try {
-      const { error } = await supabase.auth.updateUser({
-        password,
+      // First, get the current user's email
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !user.email) {
+        throw new Error('User not authenticated.');
+      }
+
+      // Verify the old password by trying to sign in with it
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: oldPassword,
       });
 
-      if (error) throw error;
+      if (signInError) {
+        // This error indicates the old password was incorrect
+        throw new Error('Current password is not correct.');
+      }
+
+      // If sign-in was successful, the old password is correct. Now, update to the new password.
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) throw updateError;
     } catch (error) {
       console.error('Update password error:', error);
       throw error;
@@ -255,9 +273,11 @@ export class AuthService {
   }
 
   // Listen to auth state changes
-  static onAuthStateChange(callback: (user: User | null) => void) {
-    return supabase.auth.onAuthStateChange((_event, session) => {
-      callback(session?.user || null);
+  // Forward the original (event, session) arguments from Supabase so callers
+  // that expect (event, session) receive them unchanged.
+  static onAuthStateChange(callback: (event: string, session: any) => void) {
+    return supabase.auth.onAuthStateChange((event, session) => {
+      callback(event, session);
     });
   }
 }

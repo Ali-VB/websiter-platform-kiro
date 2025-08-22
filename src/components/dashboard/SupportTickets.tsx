@@ -215,7 +215,7 @@ export const SupportTickets: React.FC = () => {
             <motion.div variants={fadeInUp}>
                 <Card className="p-4">
                     <div className="flex flex-wrap gap-2">
-                        {[
+                        {[ 
                             { key: 'all', label: 'All Tickets', count: tickets.length },
                             { key: 'open', label: 'Open', count: tickets.filter(t => t.status === 'open').length },
                             { key: 'in_progress', label: 'In Progress', count: tickets.filter(t => t.status === 'in_progress').length },
@@ -343,10 +343,10 @@ export const SupportTickets: React.FC = () => {
             <Modal
                 isOpen={!!selectedTicket}
                 onClose={() => setSelectedTicket(null)}
-                size="xl"
+                size="2xl"
             >
                 {selectedTicket && (
-                    <div className="p-6 max-h-[80vh] overflow-y-auto">
+                    <div className="p-6 max-h-[75vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-2xl font-bold text-secondary-900">
                                 Ticket Details

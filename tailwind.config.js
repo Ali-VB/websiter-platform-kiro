@@ -36,7 +36,8 @@ export default {
                     foreground: "oklch(0.556 0 0 / <alpha-value>)",
                 },
                 accent: {
-                    DEFAULT: "oklch(0.92 0.02 85 / <alpha-value>)",
+                    DEFAULT: "oklch(0.5 0.15 250 / <alpha-value>)", // Changed
+                    "600": "oklch(0.4 0.15 250 / <alpha-value>)", // Added
                     foreground: "oklch(0.145 0 0 / <alpha-value>)",
                 },
                 popover: {

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
 import { useProjects } from '../../hooks/useProjects';
 import { Button } from '../common';
-import { LayoutDashboard, List, CreditCard, LifeBuoy, Settings, Home, LogOut } from 'lucide-react';
+import { LayoutDashboard, List, CreditCard, LifeBuoy, Settings, Home, LogOut, User } from 'lucide-react';
 
 type DashboardView = 'overview' | 'projects' | 'payments' | 'support' | 'settings';
 
@@ -148,10 +148,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                         transition={{ delay: 0.6, duration: 0.3 }}
                     >
                         <div className="flex items-center gap-3 p-3 bg-neutral-0/50 rounded-xl hover:bg-neutral-0/70 transition-all duration-300">
+                            {/* Replaced user initial with User icon */}
                             <div className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-xl flex items-center justify-center shadow-soft animate-float">
-                                <span className="text-white font-display font-bold text-lg">
-                                    {user?.name?.charAt(0) || 'U'}
-                                </span>
+                                <User className="w-6 h-6 text-[#ED4899]" /> {/* User icon */}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="font-display font-semibold text-sm text-neutral-900 truncate">
@@ -167,7 +166,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                                 size="sm"
                                 variant="outline"
                                 onClick={() => window.location.href = '/'}
-                                className="flex-1 text-xs hover:scale-105 transition-transform flex items-center justify-center"
+                                className="flex-1 text-xs hover:scale-105 transition-transform flex items-center justify-center text-neutral-700" 
                             >
                                 <Home className="w-4 h-4 mr-2" /> Home
                             </Button>
@@ -175,7 +174,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                                 size="sm"
                                 variant="ghost"
                                 onClick={handleSignOut}
-                                className="flex-1 text-xs text-error-600 hover:text-error-700 hover:bg-error-50 hover:scale-105 transition-all flex items-center justify-center"
+                                className="flex-1 text-xs hover:text-error-700 hover:bg-error-50 hover:scale-105 transition-all flex items-center justify-center text-red-700" 
                             >
                                 <LogOut className="w-4 h-4 mr-2" /> Exit
                             </Button>

@@ -1,76 +1,89 @@
 import React, { useState, useRef } from 'react';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from './components/ui/toaster';
 import NewLandingPage from './components/NewLandingPage';
 import { OnboardingFlow } from './components/onboarding';
 import { ClientDashboard } from './components/dashboard';
-import { AdminDashboard } from './components/admin';
-import { AdminLogin } from './components/admin/AdminLogin';
+import AdminPortal from './components/admin/AdminPortal';
 import { AuthModal } from './components/auth/AuthModal';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useUserSync } from './hooks/useUserSync';
 import { ProjectService } from './services/supabase/projects';
 import type { OnboardingData } from './components/onboarding';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useToast } from './hooks/use-toast';
+import { NewPasswordForm } from './components/auth/NewPasswordForm';
 
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-          success: {
-            duration: 3000,
-            iconTheme: {
-              primary: '#10b981',
-              secondary: '#fff',
-            },
-          },
-          error: {
-            duration: 5000,
-            iconTheme: {
-              primary: '#ef4444',
-              secondary: '#fff',
-            },
-          },
-        }}
-      />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+      <Toaster />
     </AuthProvider>
   );
 }
 
 function AppContent() {
-  const [currentView, setCurrentView] = useState<'landing' | 'onboarding' | 'dashboard' | 'admin' | 'admin-login'>('landing');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  // useWebsiteRequests removed - using simple approach
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  // Enable automatic user synchronization
   useUserSync();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const submissionRef = useRef<string | null>(null); // Track last submission to prevent duplicates
+  const submissionRef = useRef<string | null>(null);
 
-  // Check if this is an auth callback
+  // Effect to handle automatic redirection after page load if user is signed in
   React.useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isAuthCallback = urlParams.has('code') || window.location.hash.includes('access_token');
+    // If the URL contains Supabase recovery tokens, ensure the user lands on
+    // the dedicated reset page so the reset flow runs before any auto-redirect.
+    const hash = window.location.hash || '';
+    const hashParams = new URLSearchParams(hash.substring(1));
+    const searchParams = new URLSearchParams(window.location.search || '');
+    const hasRecoveryInHash = hashParams.get('access_token') && hashParams.get('refresh_token');
+    const hasRecoveryInQuery = searchParams.get('type') === 'recovery' || searchParams.get('access_token') || searchParams.get('refresh_token');
 
-    if (isAuthCallback) {
-      // This is an auth callback, let the auth system handle it
-      console.log('Auth callback detected');
+    if ((hasRecoveryInHash || hasRecoveryInQuery) && window.location.pathname !== '/auth/reset-password') {
+      // Keep existing query/hash when navigating so NewPasswordForm can read tokens
+      navigate(`/auth/reset-password${window.location.search}${window.location.hash}`, { replace: true });
+      return; // Skip rest of this effect for now
     }
-  }, []);
+
+    const isResetFlow = (() => {
+      try {
+        if (sessionStorage.getItem('authFlow') === 'reset') return true;
+      } catch (e) { }
+
+      const pathname = window.location.pathname || '';
+      // If the user landed on the dedicated reset page, do not auto-redirect
+      if (pathname === '/auth/reset-password') return true;
+
+      // Check hash tokens (e.g., access_token in URL fragment)
+      const h = window.location.hash || '';
+      const hp = new URLSearchParams(h.substring(1));
+      if (hp.get('access_token') && hp.get('refresh_token')) return true;
+
+      // Also check query string for Supabase recovery params (type=recovery or tokens)
+      const sp = new URLSearchParams(window.location.search || '');
+      if (sp.get('type') === 'recovery') return true;
+      if (sp.get('access_token') || sp.get('refresh_token')) return true;
+
+      return false;
+    })();
+
+    // Also avoid auto-redirect when on any auth-related path
+    if (!loading && user && window.location.pathname === '/' && !isResetFlow && !window.location.pathname.startsWith('/auth')) {
+      navigate('/dashboard');
+    }
+  }, [user, loading, navigate]);
 
   const handleStartProject = () => {
-    setCurrentView('onboarding');
+    // This function might need to be passed down to ClientDashboard if it's still used
+    // For now, it's kept as a placeholder
   };
 
   const handleOnboardingComplete = async (data: OnboardingData) => {
-    // Create a unique submission ID based on user and core data (not timestamp)
     const coreData = {
       userId: user?.id,
       websiteType: data.websitePurpose?.type,
@@ -79,13 +92,11 @@ function AppContent() {
     };
     const submissionId = JSON.stringify(coreData);
 
-    // Prevent duplicate submissions
     if (isSubmitting) {
       console.log('⚠️ Submission already in progress, ignoring duplicate call');
       return;
     }
 
-    // Check if we just processed this exact same submission
     if (submissionRef.current === submissionId) {
       console.log('⚠️ Duplicate submission detected (same data), ignoring call');
       return;
@@ -101,89 +112,70 @@ function AppContent() {
 
       if (!user) {
         console.error('❌ No user found during order submission');
-        alert('Please sign in to complete your order.');
+        toast({ title: 'Error', description: 'Please sign in to complete your order.', variant: 'destructive' });
         return;
       }
 
-      // Create project directly from onboarding data
-      console.log('💾 Creating project from onboarding data...');
       const savedProject = await ProjectService.createFromOnboardingData(data, user.id);
       console.log('✅ Project created successfully:', savedProject);
 
       console.log('🎉 Order submission completed successfully!');
-      // The success page will be shown by the onboarding flow
-      // No need to change view here
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to create project:', error);
       console.error('Error details:', error);
-      // Show error message to user
-      alert('There was an error saving your project. Please try again or contact support.');
-      // Reset submission ref on error to allow retry
+      toast({ title: 'Error', description: 'There was an error saving your project. Please try again or contact support.', variant: 'destructive' });
       submissionRef.current = null;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleOnboardingCancel = () => {
-    setCurrentView('landing');
-  };
-
-  // Check URL for dashboard routes and handle sign-in redirect
-  React.useEffect(() => {
-    const path = window.location.pathname;
-    if (path === '/system-management-portal') {
-      if (user?.role === 'admin') {
-        setCurrentView('admin');
-      } else {
-        // Show admin login for secure URL, regardless of user state
-        setCurrentView('admin-login');
-      }
-    } else if (path === '/dashboard' && user) {
-      setCurrentView('dashboard');
-    } else if (user && user.role !== 'admin' && currentView === 'landing') {
-      // When user signs in from landing page, redirect to dashboard
-      setCurrentView('dashboard');
-    }
-  }, [user, currentView]);
-
-  const handleAdminLoginSuccess = () => {
-    setCurrentView('admin');
-  };
-
-  if (currentView === 'admin-login') {
-    return <AdminLogin onLoginSuccess={handleAdminLoginSuccess} />;
-  }
-
-  if (currentView === 'admin') {
-    return <AdminDashboard />;
-  }
-
-  if (currentView === 'dashboard') {
-    return <ClientDashboard onStartProject={handleStartProject} />;
-  }
-
-  if (currentView === 'onboarding') {
+  // Render loading state if auth is still loading
+  if (loading) {
     return (
-      <OnboardingFlow
-        onComplete={handleOnboardingComplete}
-        onCancel={handleOnboardingCancel}
-      />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
+        <div className="text-center">
+          <p className="text-secondary-600 mt-4">Loading application...</p>
+        </div>
+      </div>
     );
   }
 
   return (
     <>
-      <NewLandingPage
-        onStartProject={handleStartProject}
-        onSignInClick={() => setIsAuthModalOpen(true)} // Pass function to open modal
-      />
+      <Routes>
+        <Route path="/" element={
+          <NewLandingPage
+            onStartProject={handleStartProject}
+            onSignInClick={() => setIsAuthModalOpen(true)}
+          />
+        } />
+
+        {/* Direct route for password reset - no AuthModal needed here */}
+        <Route path="/auth/reset-password" element={<NewPasswordForm />} />
+
+        {/* Protected routes for authenticated users */}
+        <Route
+          path="/dashboard/*" // Use /* to match nested routes if any
+          element={user ? <ClientDashboard onStartProject={handleStartProject} /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/onboarding" // Onboarding is also protected
+          element={user ? <OnboardingFlow onComplete={handleOnboardingComplete} onCancel={() => { }} /> : <Navigate to="/" />}
+        />
+
+        {/* Admin routes: AdminPortal keeps a stable container to avoid UI blinking */}
+        <Route path="/system-management-portal/*" element={<AdminPortal />} />
+        {/* Removed /admin-login for security: admin login is only available at /system-management-portal */}
+
+        {/* Fallback for unknown routes - redirect to landing or appropriate default */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+
+      {/* AuthModal is now only for initial sign-in/sign-up from landing page */}
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onSuccess={() => {
-          // Handle successful login, e.g., redirect to dashboard
-          setCurrentView('dashboard');
+        onClose={() => {
           setIsAuthModalOpen(false);
         }}
       />

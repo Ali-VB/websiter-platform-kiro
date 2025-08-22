@@ -2,33 +2,49 @@ import { useState, useEffect, useContext, createContext } from 'react';
 import type { ReactNode } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { AuthService, type AuthUser } from '../services/supabase/auth';
+import { supabase } from '../lib/supabase'; // Import supabase
 
 interface AuthContextType {
-    user: AuthUser | null;
+    // The user may be either our custom AuthUser (from users table) or the
+    // raw Supabase User while the profile is being resolved.
+    user: AuthUser | User | null;
     loading: boolean;
     signUp: (data: { email: string; password: string; name: string }) => Promise<void>;
     signIn: (data: { email: string; password: string }) => Promise<void>;
     adminSignIn: (data: { email: string; password: string }) => Promise<void>;
-    signInWithGoogle: () => Promise<void>;
+
 
     signOut: () => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
-    updatePassword: (password: string) => Promise<void>;
+    updatePassword: (oldPassword: string, newPassword: string) => Promise<void>;
     updateProfile: (updates: Partial<AuthUser>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<AuthUser | null>(null);
+    // Accept either our custom AuthUser (from users table) or the raw Supabase User
+    // while the profile is being resolved.
+    const [user, setUser] = useState<AuthUser | User | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Get initial session
         const getInitialSession = async () => {
             try {
-                const profile = await AuthService.getCurrentUserProfile();
-                setUser(profile);
+                // Directly get the user from Supabase auth
+                const { data: { user: authUser } } = await supabase.auth.getUser();
+                if (authUser) {
+                    // Try to get a richer profile first. Only set the `user` state after
+                    // profile resolution to avoid rendering UI based on incomplete user data.
+                    const profile = await AuthService.getCurrentUserProfile();
+                    if (profile) {
+                        setUser(profile);
+                    } else {
+                        // Fallback to raw auth user while profile creation/confirmation finishes
+                        setUser(authUser);
+                    }
+                }
             } catch (error) {
                 console.error('Error getting initial session:', error);
             } finally {
@@ -39,64 +55,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         getInitialSession();
 
         // Listen for auth changes
-        const { data: { subscription } } = AuthService.onAuthStateChange(async (authUser: User | null) => {
-            console.log('Auth state changed:', authUser ? 'User signed in' : 'User signed out');
+        const { data: { subscription } } = AuthService.onAuthStateChange(async (event, session) => {
+            const authUser = session?.user || null; // Get authUser from session
 
-            if (authUser) {
-                console.log('Auth user details:', {
-                    id: authUser.id,
-                    email: authUser.email,
-                    confirmed: authUser.email_confirmed_at,
-                    metadata: authUser.user_metadata
-                });
+            console.log('Auth state changed:', authUser ? 'User signed in' : 'User signed out', 'Event:', event);
 
-                // Get or create user profile
-                let profile = await AuthService.getCurrentUserProfile();
-                console.log('Current profile:', profile);
+            if (!authUser) {
+                setUser(null);
+                setLoading(false);
+                return;
+            }
 
-                // Special handling for admin portal
-                if (window.location.pathname === '/system-management-portal') {
-                    // On admin portal, only allow admin users
-                    if (profile?.role !== 'admin') {
-                        console.log('Non-admin user on admin portal, signing out');
-                        await AuthService.signOut();
-                        setUser(null);
-                        setLoading(false);
-                        return;
-                    }
-                } else {
-                    // On regular site, block admin users
-                    if (profile?.role === 'admin') {
-                        console.log('Admin user detected on regular site, signing out');
-                        await AuthService.signOut();
-                        alert('Admin accounts cannot sign in through the regular login. Please use the system management portal.');
-                        setUser(null);
-                        setLoading(false);
-                        return;
-                    }
+            console.log('Auth user details:', {
+                id: authUser.id,
+                email: authUser.email,
+                confirmed: authUser.email_confirmed_at,
+                metadata: authUser.user_metadata
+            });
+
+            // Try to fetch/create a full profile first. Only after profile resolution
+            // do we set the `user` state to avoid flicker between unauthenticated and
+            // authenticated UI (especially for admin routes).
+            let profile = await AuthService.getCurrentUserProfile();
+            console.log('Current profile:', profile);
+
+            // Special handling for admin portal
+            if (window.location.pathname === '/system-management-portal') {
+                if (profile?.role !== 'admin') {
+                    console.log('Non-admin user on admin portal, signing out');
+                    await AuthService.signOut();
+                    setUser(null);
+                    setLoading(false);
+                    return;
                 }
-
-                // If no profile exists and user is confirmed, try to create one
-                if (!profile && authUser.email_confirmed_at) {
-                    console.log('Creating missing profile for confirmed user');
-                    try {
-                        const userName = authUser.user_metadata?.name ||
-                            authUser.user_metadata?.full_name ||
-                            authUser.email?.split('@')[0] ||
-                            'User';
-
-                        await AuthService.createUserProfile(authUser, userName);
-                        profile = await AuthService.getCurrentUserProfile();
-                        console.log('Profile created:', profile);
-                    } catch (error) {
-                        console.error('Failed to create profile after confirmation:', error);
-                    }
+            } else {
+                if (profile?.role === 'admin') {
+                    console.log('Admin user detected on regular site, signing out');
+                    await AuthService.signOut();
+                    alert('Admin accounts cannot sign in through the regular login. Please use the system management portal.');
+                    setUser(null);
+                    setLoading(false);
+                    return;
                 }
+            }
 
+            // If profile is missing but auth user is confirmed, try creating a profile
+            if (!profile && authUser.email_confirmed_at) {
+                console.log('Creating missing profile for confirmed user');
+                try {
+                    const userName = authUser.user_metadata?.name ||
+                        authUser.user_metadata?.full_name ||
+                        authUser.email?.split('@')[0] ||
+                        'User';
+
+                    await AuthService.createUserProfile(authUser, userName);
+                    profile = await AuthService.getCurrentUserProfile(); // Re-fetch after creation
+                    console.log('Profile created:', profile);
+                } catch (error) {
+                    console.error('Failed to create profile after confirmation:', error);
+                }
+            }
+
+            // Final update of user state with the most complete profile
+            if (profile) {
                 setUser(profile);
             } else {
-                setUser(null);
+                // Fallback to authUser if profile couldn't be obtained
+                setUser(authUser);
             }
+
             setLoading(false);
         });
 
@@ -153,22 +180,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const signInWithGoogle = async () => {
-        setLoading(true);
-        try {
-            await AuthService.signInWithGoogle();
-        } catch (error) {
-            setLoading(false);
-            throw error;
-        }
-    };
+
 
     const resetPassword = async (email: string) => {
         await AuthService.resetPassword(email);
     };
 
-    const updatePassword = async (password: string) => {
-        await AuthService.updatePassword(password);
+    const updatePassword = async (oldPassword: string, newPassword: string) => {
+        await AuthService.updatePassword(oldPassword, newPassword);
     };
 
     const updateProfile = async (updates: Partial<AuthUser>) => {

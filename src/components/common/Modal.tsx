@@ -6,7 +6,7 @@ export interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
     children: React.ReactNode;
-    size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+    size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
     closeOnBackdrop?: boolean;
     closeOnEscape?: boolean;
 }
@@ -16,6 +16,7 @@ const sizeClasses = {
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
+    '2xl': 'max-w-5xl',
     full: 'max-w-full mx-4',
 };
 
@@ -69,7 +70,9 @@ export const Modal: React.FC<ModalProps> = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
-                        className={`bg-white rounded-lg p-8 max-w-md w-full ${sizeClass}`}
+                        // Remove the hard-coded max-w-md so the `size` prop controls width.
+                        // Also add a max-height and overflow so very tall content scrolls instead of stretching the viewport.
+                        className={`bg-white rounded-lg p-8 w-full ${sizeClass} max-h-[90vh] overflow-y-auto`}
                     >
                         {children}
                     </motion.div>
